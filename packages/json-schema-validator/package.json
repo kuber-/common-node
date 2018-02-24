@@ -1,0 +1,14 @@
+{
+  "name": "@ten-bits/json-schema-validator",
+  "version": "0.0.1",
+  "description": "Validates json schema",
+  "main": "lib/index.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "babel src --out-dir lib"
+  },
+  "dependencies": {
+    "ajv": "^6.1.1"
+  }
+}

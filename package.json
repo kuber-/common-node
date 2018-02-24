@@ -1,0 +1,58 @@
+{
+  "name": "@ten-bits/common-node",
+  "version": "0.0.0",
+  "description": "common packages for nodejs",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:ten-bits/common-node.git"
+  },
+  "homepage": "https://github.com/ten-bits/common-node.git",
+  "scripts": {
+    "build-clean": "rm -rf ./packages/*/lib",
+    "clean-all": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules && npm run build-clean",
+    "build": "lerna run build",
+    "publish": "npm run build-clean && npm run build && lerna publish",
+    "bootstrap": "npm install; lerna bootstrap",
+    "test": "jest",
+    "test-coverage": "npm run test -- --coverage",
+    "lint": "standard",
+    "lint-fix": "standard --fix"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.1",
+    "babel-jest": "^22.4.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-lodash": "^3.3.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "jest": "^22.4.2",
+    "lerna": "^2.9.0",
+    "regenerator-runtime": "^0.11.1",
+    "rimraf": "^2.6.2",
+    "standard": "^11.0.0"
+  },
+  "standard": {
+    "env": {
+      "jest": true
+    },
+    "parser": "babel-eslint",
+    "ignore": [
+      "packages/**/lib/**"
+    ]
+  },
+  "jest": {
+    "verbose": true,
+    "modulePathIgnorePatterns": [
+      "lib/*"
+    ]
+  },
+  "dependencies": {}
+}

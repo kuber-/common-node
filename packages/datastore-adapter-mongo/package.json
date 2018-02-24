@@ -1,0 +1,17 @@
+{
+  "name": "@ten-bits/datastore-adapter-mongo",
+  "version": "0.0.1",
+  "description": "Mongodb adapter for datastore interface",
+  "main": "lib/index.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "babel src --out-dir lib"
+  },
+  "peerDependencies": {
+    "mongodb": "*"
+  },
+  "devDependencies": {
+    "mongodb": "^3.0.2"
+  }
+}

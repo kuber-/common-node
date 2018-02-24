@@ -1,0 +1,7 @@
+package-lock.json
+node_modules
+data
+lib
+src/examples
+*.log
+coverage

@@ -1,0 +1,16 @@
+{
+  "name": "@ten-bits/datastore",
+  "version": "0.0.1",
+  "description": "",
+  "main": "lib/index.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "babel src --out-dir lib"
+  },
+  "dependencies": {
+    "ajv": "^6.1.1",
+    "flat": "^4.0.0",
+    "lodash": "^4.17.5"
+  }
+}
