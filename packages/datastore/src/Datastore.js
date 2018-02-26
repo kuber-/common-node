@@ -334,6 +334,7 @@ export default class Datastore extends EventEmitter {
 
     this.notify(`${this.schema.name}.updated`, {
       updatedCount,
+      update,
       filter
     })
 
@@ -359,7 +360,7 @@ export default class Datastore extends EventEmitter {
       })
     }
 
-    return deletedId
+    return deletedId || false
   }
 
   /**
@@ -377,10 +378,12 @@ export default class Datastore extends EventEmitter {
       options
     )
 
-    this.notify(`${this.schema.name}.deleted`, {
-      ids: deletedIds,
-      deletedCount: deletedIds.length
-    })
+    if (deletedIds && deletedIds.length > 0) {
+      this.notify(`${this.schema.name}.deleted`, {
+        ids: deletedIds,
+        deletedCount: deletedIds.length
+      })
+    }
 
     return deletedIds
   }
@@ -404,10 +407,12 @@ export default class Datastore extends EventEmitter {
       options
     )
 
-    this.notify(`${this.schema.name}.deleted`, {
-      filter,
-      deletedCount
-    })
+    if (deletedCount > 0) {
+      this.notify(`${this.schema.name}.deleted`, {
+        filter,
+        deletedCount
+      })
+    }
 
     return deletedCount
   }
