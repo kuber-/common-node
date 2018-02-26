@@ -96,7 +96,7 @@ export default class Datastore extends EventEmitter {
    * datastore.on('user.deleted', ({ ids, deletedCount, filter }) => {})
    *
    * @param {object} config
-   * @param {string} config.schema
+   * @param {object} config.schema
    * @param {object|function} config.adapter
    */
   constructor (config) {
@@ -172,7 +172,7 @@ export default class Datastore extends EventEmitter {
     return {
       update: {
         $set: flatten(convertedUpdate.$set),
-        $inc: flatten(convertedUpdate.$inc)
+        $inc: convertedUpdate.$inc ? flatten(convertedUpdate.$inc) : undefined
       },
       // we need unflatten version for json schema to validate properly
       validate: flatten.unflatten({
@@ -208,10 +208,11 @@ export default class Datastore extends EventEmitter {
    * @param {object} data
    */
   async notify (eventName, data) {
-    setTimeout(() => {
+    return new Promise((resolve) => {
       this.emit('*', eventName, data)
       this.emit(eventName, data)
-    }, 0)
+      resolve()
+    })
   }
 
   /**
