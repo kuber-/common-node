@@ -1,4 +1,5 @@
 import Datastore from '../Datastore'
+import Schema from '../Schema'
 
 const getEntity = (counter = 1) => ({
   name: `name-${counter}`,
@@ -28,9 +29,16 @@ const defaultAdapter = () => ({
 })
 
 const defaultSchemaName = 'defaultSchema'
-const defaultSchema = () => ({
+const defaultSchema = () => new Schema({
   name: defaultSchemaName,
-  validate: jest.fn()
+  entity: {
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      state: { type: 'string' },
+      suburb: { type: 'string' }
+    }
+  }
 })
 
 describe('Datastore', () => {
@@ -43,6 +51,7 @@ describe('Datastore', () => {
     })
 
     jest.spyOn(datastore, 'notify')
+    jest.spyOn(datastore.schema, 'validate')
   })
 
   it('should have interface methods', () => {
@@ -183,14 +192,41 @@ describe('Datastore', () => {
   })
 
   describe('#insertOne', () => {
-    it('should call adapter insertOne', async () => {
-      expect.assertions(4)
+    it('should validate entity before insert', async () => {
+      expect.assertions(1)
+      const entity = getEntity()
+      await datastore.insertOne(entity)
+      expect(datastore.schema.validate).toHaveBeenCalledWith(entity)
+    })
+
+    it('should throw if entity is not valid before insert', async () => {
+      expect.assertions(1)
+      const invalidEntity = { name: 1 }
+      return expect(datastore.insertOne(invalidEntity)).rejects.toMatchObject({
+        message: 'Parameters validation error!',
+        code: 422
+      })
+    })
+
+    it('should call adapter#insertOne', async () => {
+      expect.assertions(1)
       const entity = getEntity()
       const options = {}
-      const insertedEntity = await datastore.insertOne(entity, options)
-      expect(insertedEntity).toEqual(getEntityWithId())
-      expect(datastore.schema.validate).toHaveBeenCalledWith(entity)
+      await datastore.insertOne(entity, options)
       expect(datastore.adapter.insertOne).toHaveBeenCalledWith(entity, options)
+    })
+
+    it('should return inserted entity', async () => {
+      expect.assertions(1)
+      const entity = getEntity()
+      const insertedEntity = await datastore.insertOne(entity)
+      expect(insertedEntity).toEqual(getEntityWithId())
+    })
+
+    it('should notify on successful insert', async () => {
+      expect.assertions(1)
+      const entity = getEntity()
+      await datastore.insertOne(entity)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.created`, {
         entities: [getEntityWithId()],
         insertedCount: 1
