@@ -19,6 +19,7 @@
     "bootstrap": "npm install; lerna bootstrap",
     "test": "jest",
     "test-coverage": "npm run test -- --coverage",
+    "test-watch": "npm run test -- --coverage --watch",
     "lint": "standard",
     "lint-fix": "standard --fix"
   },
