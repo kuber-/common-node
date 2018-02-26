@@ -230,7 +230,7 @@ describe('Datastore', () => {
       expect.assertions(1)
       const id = 1
       const options = {}
-      datastore.adapter.findById = jest.fn()      
+      datastore.adapter.findById = jest.fn()
       await datastore.findById(id, options)
       expect(datastore.adapter.findById).toHaveBeenCalledWith(id, options)
     })
