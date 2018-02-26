@@ -140,6 +140,10 @@ export default class Datastore extends EventEmitter {
    * @param {object} update
    */
   convertUpdate (update) {
+    if (!update) {
+      throw new Error('update is empty. You must specify at least one field')
+    }
+
     const updateKeys = Object.keys(update)
     const convertedUpdate = {}
 
@@ -205,7 +209,7 @@ export default class Datastore extends EventEmitter {
    *
    * @private
    * @param {string} eventName
-   * @param {object} data
+   * @param {object} [data]
    */
   async notify (eventName, data) {
     return new Promise((resolve) => {

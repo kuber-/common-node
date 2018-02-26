@@ -1,7 +1,30 @@
 import Datastore from '../Datastore'
 
+const getEntity = (counter = 1) => ({
+  name: `name-${counter}`,
+  state: `state-${counter}`,
+  suburb: `suburb-${counter}`
+})
+
+const getEntityWithId = (id = 1, counter = 1) => ({
+  id,
+  ...getEntity(counter)
+})
+
 const defaultAdapter = () => ({
-  init: jest.fn()
+  init: jest.fn(),
+  insertOne: jest.fn(() => getEntityWithId()),
+  insertMany: jest.fn(() => [getEntityWithId(1, 1), getEntityWithId(2, 2)]),
+  updateById: jest.fn(() => getEntityWithId()),
+  updateMany: jest.fn(() => 1),
+  deleteById: jest.fn(() => 1),
+  deleteByIds: jest.fn(() => [1, 2]),
+  deleteMany: jest.fn(() => 1),
+  findById: jest.fn(() => getEntityWithId()),
+  findByIds: jest.fn(() => [getEntityWithId(1, 1), getEntityWithId(2, 2)]),
+  findOne: jest.fn(() => getEntityWithId()),
+  find: jest.fn(() => [getEntityWithId(1, 1), getEntityWithId(2, 2)]),
+  count: jest.fn(() => 1)
 })
 
 const defaultSchemaName = 'defaultSchema'
@@ -18,6 +41,8 @@ describe('Datastore', () => {
       adapter: defaultAdapter(),
       schema: defaultSchema()
     })
+
+    jest.spyOn(datastore, 'notify')
   })
 
   it('should have interface methods', () => {
@@ -64,21 +89,48 @@ describe('Datastore', () => {
           update: { $set: { name: 'name', state: 'state' }, $inc: { total: 10 } },
           validate: { name: 'name', state: 'state', total: 10 }
         }
+      }, {
+        given: { name: 'name', state: 'state', $set: { suburb: 'suburb' }, $inc: { total: 10 } },
+        expected: {
+          update: { $set: { name: 'name', state: 'state', suburb: 'suburb' }, $inc: { total: 10 } },
+          validate: { name: 'name', state: 'state', suburb: 'suburb', total: 10 }
+        }
+      }, {
+        given: { 'name.first': 'first name', $set: { 'name.last': 'last name' }, $inc: { 'views.total': 10 } },
+        expected: {
+          update: { $set: { 'name.first': 'first name', 'name.last': 'last name' }, $inc: { 'views.total': 10 } },
+          validate: { name: { first: 'first name', last: 'last name' }, views: { total: 10 } }
+        }
       }]
 
       tests.forEach((value) => {
         expect(datastore.convertUpdate(value.given)).toEqual(value.expected)
       })
     })
+
+    it('should throw error when nothing is given', () => {
+      expect(() => datastore.convertUpdate()).toThrow('update is empty. You must specify at least one field')
+    })
+
+    it('should throw error when empty object is given', () => {
+      expect(() => datastore.convertUpdate({})).toThrow('update is empty. You must specify at least one field')
+    })
   })
 
-  describe('#notfy', () => {
-    it('emit passed event and global event', async () => {
-      expect.assertions(3)
+  describe('#notify', () => {
+    it('should emit eventName when given eventName and/or data', async () => {
+      expect.assertions(2)
       datastore.emit = jest.fn()
       await datastore.notify('test event', {})
       expect(datastore.emit).toHaveBeenCalledTimes(2)
       expect(datastore.emit).toHaveBeenCalledWith('test event', {})
+    })
+
+    it('should emit * when given any event and/or data', async () => {
+      expect.assertions(2)
+      datastore.emit = jest.fn()
+      await datastore.notify('test event', {})
+      expect(datastore.emit).toHaveBeenCalledTimes(2)
       expect(datastore.emit).toHaveBeenCalledWith('*', 'test event', {})
     })
   })
@@ -132,16 +184,15 @@ describe('Datastore', () => {
 
   describe('#insertOne', () => {
     it('should call adapter insertOne', async () => {
-      expect.assertions(3)
-      const entity = {}
+      expect.assertions(4)
+      const entity = getEntity()
       const options = {}
-      datastore.notify = jest.fn()
-      datastore.adapter.insertOne = jest.fn(() => entity)
-      await datastore.insertOne(entity, options)
+      const insertedEntity = await datastore.insertOne(entity, options)
+      expect(insertedEntity).toEqual(getEntityWithId())
       expect(datastore.schema.validate).toHaveBeenCalledWith(entity)
       expect(datastore.adapter.insertOne).toHaveBeenCalledWith(entity, options)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.created`, {
-        entities: [entity],
+        entities: [getEntityWithId()],
         insertedCount: 1
       })
     })
@@ -149,16 +200,15 @@ describe('Datastore', () => {
 
   describe('#insertMany', () => {
     it('should call adapter insertMany', async () => {
-      expect.assertions(3)
-      const entities = [{}, {}]
+      expect.assertions(4)
+      const entities = [getEntity(1), getEntity(2)]
       const options = {}
-      datastore.notify = jest.fn()
-      datastore.adapter.insertMany = jest.fn(() => entities)
-      await datastore.insertMany(entities, options)
+      const insertedEntities = await datastore.insertMany(entities, options)
+      expect(insertedEntities).toEqual([getEntityWithId(1, 1), getEntityWithId(2, 2)])
       expect(datastore.schema.validate).toHaveBeenCalledTimes(2)
       expect(datastore.adapter.insertMany).toHaveBeenCalledWith(entities, options)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.created`, {
-        entities: entities,
+        entities: insertedEntities,
         insertedCount: 2
       })
     })
@@ -166,15 +216,13 @@ describe('Datastore', () => {
 
   describe('#updateById', () => {
     it('should call adapter updateById', async () => {
-      expect.assertions(4)
+      expect.assertions(5)
       const id = 1
-      const update = { name: 'name' }
-      const updatedEntity = {}
+      const update = { name: 'name-1' }
       const options = {}
       const convertedUpdate = datastore.convertUpdate(update)
-      datastore.notify = jest.fn()
-      datastore.adapter.updateById = jest.fn(() => updatedEntity)
-      await datastore.updateById(id, update, options)
+      const updatedEntity = await datastore.updateById(id, update, options)
+      expect(updatedEntity).toEqual(getEntityWithId())
       expect(datastore.schema.validate).toHaveBeenCalledTimes(1)
       expect(datastore.schema.validate).toHaveBeenCalledWith(convertedUpdate.validate, true)
       expect(datastore.adapter.updateById).toHaveBeenCalledWith(id, convertedUpdate.update, options)
@@ -187,35 +235,33 @@ describe('Datastore', () => {
 
   describe('#updateMany', () => {
     it('should call adapter updateMany', async () => {
-      expect.assertions(4)
-      const filter = { joined: true }
+      expect.assertions(5)
+      const filter = { name: 'name-1' }
       const update = { name: 'name' }
       const options = {}
       const convertedUpdate = datastore.convertUpdate(update)
-      datastore.notify = jest.fn()
-      datastore.adapter.updateMany = jest.fn(() => 1)
-      await datastore.updateMany(filter, update, options)
+      const updatedCount = await datastore.updateMany(filter, update, options)
+      expect(updatedCount).toBe(1)
       expect(datastore.schema.validate).toHaveBeenCalledTimes(1)
       expect(datastore.schema.validate).toHaveBeenCalledWith(convertedUpdate.validate, true)
       expect(datastore.adapter.updateMany).toHaveBeenCalledWith(filter, convertedUpdate.update, options)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.updated`, {
         filter,
-        updatedCount: 1
+        updatedCount
       })
     })
   })
 
   describe('#deleteById', () => {
     it('should call adapter deleteById', async () => {
-      expect.assertions(2)
+      expect.assertions(3)
       const id = 1
       const options = {}
-      datastore.notify = jest.fn()
-      datastore.adapter.deleteById = jest.fn(() => id)
-      await datastore.deleteById(id, options)
+      const deletedId = await datastore.deleteById(id, options)
+      expect(deletedId).toBe(id)
       expect(datastore.adapter.deleteById).toHaveBeenCalledWith(id, options)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.deleted`, {
-        ids: [id],
+        ids: [deletedId],
         deletedCount: 1
       })
     })
@@ -223,12 +269,11 @@ describe('Datastore', () => {
 
   describe('#deleteByIds', () => {
     it('should call adapter deleteByIds', async () => {
-      expect.assertions(2)
+      expect.assertions(3)
       const ids = [1, 2]
       const options = {}
-      datastore.notify = jest.fn()
-      datastore.adapter.deleteByIds = jest.fn(() => ids)
-      await datastore.deleteByIds(ids, options)
+      const deletedIds = await datastore.deleteByIds(ids, options)
+      expect(deletedIds).toEqual(ids)
       expect(datastore.adapter.deleteByIds).toHaveBeenCalledWith(ids, options)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.deleted`, {
         ids,
@@ -239,71 +284,70 @@ describe('Datastore', () => {
 
   describe('#deleteMany', () => {
     it('should call adapter deleteMany', async () => {
-      expect.assertions(2)
-      const filter = { joined: true }
+      expect.assertions(3)
+      const filter = { name: 'name-1' }
       const options = {}
-      datastore.notify = jest.fn()
-      datastore.adapter.deleteMany = jest.fn(() => 1)
-      await datastore.deleteMany(filter, options)
+      const deletedCount = await datastore.deleteMany(filter, options)
+      expect(deletedCount).toBe(1)
       expect(datastore.adapter.deleteMany).toHaveBeenCalledWith(filter, options)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.deleted`, {
         filter,
-        deletedCount: 1
+        deletedCount
       })
     })
   })
 
   describe('#findById', () => {
     it('should call adapter findById', async () => {
-      expect.assertions(1)
+      expect.assertions(2)
       const id = 1
       const options = {}
-      datastore.adapter.findById = jest.fn()
-      await datastore.findById(id, options)
+      const found = await datastore.findById(id, options)
+      expect(found).toEqual(getEntityWithId())
       expect(datastore.adapter.findById).toHaveBeenCalledWith(id, options)
     })
   })
 
   describe('#findByIds', () => {
     it('should call adapter findByIds', async () => {
-      expect.assertions(1)
-      const ids = []
+      expect.assertions(2)
+      const ids = [1, 2]
       const options = {}
-      datastore.adapter.findByIds = jest.fn()
-      await datastore.findByIds(ids, options)
+      const found = await datastore.findByIds(ids, options)
+      expect(found).toEqual([getEntityWithId(1, 1), getEntityWithId(2, 2)])
       expect(datastore.adapter.findByIds).toHaveBeenCalledWith(ids, options)
     })
   })
 
   describe('#findOne', () => {
     it('should call adapter findOne', async () => {
-      expect.assertions(1)
-      const filter = { joined: true }
+      expect.assertions(2)
+      const filter = { name: 'name-1' }
       const options = {}
-      datastore.adapter.findOne = jest.fn()
-      await datastore.findOne(filter, options)
+      const found = await datastore.findOne(filter, options)
+      expect(found).toEqual(getEntityWithId())
       expect(datastore.adapter.findOne).toHaveBeenCalledWith(filter, options)
     })
   })
 
   describe('#find', () => {
     it('should call adapter find', async () => {
-      expect.assertions(1)
-      const filter = { joined: true }
+      expect.assertions(2)
+      const filter = { name: 'name-1' }
       const options = {}
-      datastore.adapter.find = jest.fn()
-      await datastore.find(filter, options)
+      const found = await datastore.find(filter, options)
+      expect(found).toEqual([getEntityWithId(1, 1), getEntityWithId(2, 2)])
       expect(datastore.adapter.find).toHaveBeenCalledWith(filter, options)
     })
   })
 
   describe('#count', () => {
     it('should call adapter count', async () => {
-      expect.assertions(1)
-      const filter = { joined: true }
+      expect.assertions(2)
+      const filter = { name: 'name-1' }
       const options = {}
-      datastore.adapter.count = jest.fn()
-      await datastore.count(filter, options)
+      const count = await datastore.count(filter, options)
+      expect(count).toBe(1)
       expect(datastore.adapter.count).toHaveBeenCalledWith(filter, options)
     })
   })
