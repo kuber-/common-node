@@ -44,6 +44,34 @@ describe('Datastore', () => {
     expect(datastore.invokeAdapterMethod).toBeDefined()
   })
 
+  describe('#convertUpdate', () => {
+    it('should convert update values to datatastore internal update format', () => {
+      const tests = [{
+        given: { name: 'name', state: 'state' },
+        expected: {
+          update: { $set: { name: 'name', state: 'state' } },
+          validate: { name: 'name', state: 'state' }
+        }
+      }, {
+        given: { name: 'name', state: 'state', $set: { suburb: 'suburb' } },
+        expected: {
+          update: { $set: { name: 'name', state: 'state', suburb: 'suburb' } },
+          validate: { name: 'name', state: 'state', suburb: 'suburb' }
+        }
+      }, {
+        given: { name: 'name', state: 'state', $inc: { total: 10 } },
+        expected: {
+          update: { $set: { name: 'name', state: 'state' }, $inc: { total: 10 } },
+          validate: { name: 'name', state: 'state', total: 10 }
+        }
+      }]
+
+      tests.forEach((value) => {
+        expect(datastore.convertUpdate(value.given)).toEqual(value.expected)
+      })
+    })
+  })
+
   describe('#notfy', () => {
     it('emit passed event and global event', async () => {
       expect.assertions(3)
