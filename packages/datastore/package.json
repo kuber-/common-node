@@ -9,7 +9,7 @@
     "build": "babel src --out-dir lib"
   },
   "dependencies": {
-    "ajv": "^6.1.1",
+    "@ten-bits/json-schema-validator": "0.0.1",
     "flat": "^4.0.0",
     "lodash": "^4.17.5"
   }

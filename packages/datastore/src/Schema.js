@@ -1,4 +1,4 @@
-import Ajv from 'ajv'
+import JSONSchemaValidator from '@ten-bits/json-schema-validator'
 import get from 'lodash/get'
 
 export default class Schema {
@@ -17,47 +17,17 @@ export default class Schema {
     this.createSchema = get(schema, ['validators', 'onCreate'], this.entitySchema)
     this.updateSchema = get(schema, ['validators', 'onUpdate'], {})
 
-    // mark schemas as async
-    this.entitySchema.$async = true
-    this.createSchema.$async = true
-    this.updateSchema.$async = true
-
-    // ajv instance
-    this.ajv = new Ajv({ allErrors: true, useDefaults: true })
-
     // validators
-    this.entityValidator = this.ajv.compile(this.entitySchema)
-    this.createValidator = this.ajv.compile(this.createSchema)
-    this.updateValidator = this.ajv.compile(this.updateSchema)
-  }
-
-  internalCreateError (err) {
-    const error = new Error('Parameters validation error!')
-    error.code = 422
-    error.type = 'validation_error'
-    error.data = err.errors
-    return error
-  }
-
-  async validateEntity (data) {
-    const validator = this.entityValidator
-    return validator(data).catch((error) => {
-      return Promise.reject(this.internalCreateError(error))
-    })
+    this.createValidator = new JSONSchemaValidator(this.createSchema)
+    this.updateValidator = new JSONSchemaValidator(this.updateSchema)
   }
 
   async validateCreate (data) {
-    const validator = this.createValidator
-    return validator(data).catch((error) => {
-      return Promise.reject(this.internalCreateError(error))
-    })
+    return this.createValidator.validate(data)
   }
 
   async validateUpdate (data) {
-    const validator = this.updateValidator
-    return validator(data).catch((error) => {
-      return Promise.reject(this.internalCreateError(error))
-    })
+    return this.updateValidator.validate(data)
   }
 
   async validate (data, onUpdate = false) {
