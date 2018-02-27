@@ -1,6 +1,6 @@
 {
   "name": "@ten-bits/json-schema-validator",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Validates json schema",
   "main": "lib/JSONSchemaValidator.js",
   "author": "",
