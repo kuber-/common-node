@@ -1,6 +1,6 @@
 {
   "name": "@ten-bits/datastore-adapter-mongo",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Mongodb adapter for datastore interface",
   "main": "lib/index.js",
   "author": "",
