@@ -51,28 +51,30 @@ export default class MongoDataStoreAdapter {
 
   async insertOne (doc, options) {
     const mongoDoc = this.mapDocToMongo(doc)
-    const { ops, insertedCount } = await this.collection.insertOne(mongoDoc)
+    const { ops, insertedCount } = await this.collection.insertOne(mongoDoc, options)
     return insertedCount > 0 && this.mapDocFromMongo(ops[0])
   }
 
   async insertMany (docs, options) {
     const mongoDoc = this.mapDocsToMongo(docs)
-    const { ops, insertedCount } = await this.collection.insertMany(mongoDoc)
+    const { ops, insertedCount } = await this.collection.insertMany(mongoDoc, options)
     return insertedCount > 0 && this.mapDocsFromMongo(ops)
   }
 
   async updateById (id, update, options) {
-    const { value } = await this.collection.findOneAndUpdate({ _id: mongodb.ObjectID(id) }, update, { returnOriginal: false })
+    const { value } = await this.collection.findOneAndUpdate({ _id: mongodb.ObjectID(id) }, update, Object.assign({
+      returnOriginal: false
+    }, options))
     return !!value && this.mapDocFromMongo(value)
   }
 
   async updateMany (filter, update, options) {
-    const { modifiedCount } = this.collection.updateMany(filter, update)
+    const { modifiedCount } = this.collection.updateMany(filter, update, options)
     return modifiedCount
   }
 
   async deleteById (id, options) {
-    const { value } = await this.collection.findOneAndDelete({ _id: mongodb.ObjectID(id) })
+    const { value } = await this.collection.findOneAndDelete({ _id: mongodb.ObjectID(id) }, options)
     return !!value && this.mapDocFromMongo(value).id
   }
 
@@ -82,12 +84,12 @@ export default class MongoDataStoreAdapter {
   }
 
   async deleteMany (filter, options) {
-    const { deletedCount } = await this.collection.deleteMany(filter)
+    const { deletedCount } = await this.collection.deleteMany(filter, options)
     return deletedCount
   }
 
   async findById (id, options) {
-    const doc = await this.collection.findOne({ _id: mongodb.ObjectID(id) })
+    const doc = await this.collection.findOne({ _id: mongodb.ObjectID(id) }, options)
     return this.mapDocFromMongo(doc)
   }
 
@@ -150,7 +152,7 @@ export default class MongoDataStoreAdapter {
 
   async count (filter, options) {
     const { $select, $limit, $offset, $sort, ...query } = filter
-    const count = this.collection.count(query)
+    const count = this.collection.count(query, options)
     return count
   }
 }
