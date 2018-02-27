@@ -55,6 +55,21 @@ describe('Schema', () => {
     expect(schema.validate).toBeDefined()
   })
 
+  it('should have private methods', () => {
+    expect(schema.internalCreateError).toBeDefined()
+  })
+
+  describe('#internalCreateError', () => {
+    it('should return error object', () => {
+      const error = schema.internalCreateError([])
+      expect(error).toBeInstanceOf(Error)
+      expect(error.message).toBe('Parameters validation error!')
+      expect(error.code).toBe(422)
+      expect(error.type).toBe('validation_error')
+      expect(error.data).toEqual([])
+    })
+  })
+
   describe('#validate', () => {
     it('should resolve to data when valid', () => {
       return expect(schema.validate({ name: 'name', email: 'email' })).resolves.toEqual({ name: 'name', email: 'email' })

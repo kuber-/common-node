@@ -22,12 +22,24 @@ export default class Schema {
     this.updateValidator = new JSONSchemaValidator(this.updateSchema)
   }
 
+  internalCreateError (errors) {
+    const error = new Error('Parameters validation error!')
+    error.code = 422
+    error.type = 'validation_error'
+    error.data = errors
+    return error
+  }
+
   async validateCreate (data) {
-    return this.createValidator.validate(data)
+    return this.createValidator.validate(data).catch((errors) => {
+      return Promise.reject(this.internalCreateError(errors))
+    })
   }
 
   async validateUpdate (data) {
-    return this.updateValidator.validate(data)
+    return this.updateValidator.validate(data).catch((errors) => {
+      return Promise.reject(this.internalCreateError(errors))
+    })
   }
 
   async validate (data, onUpdate = false) {
