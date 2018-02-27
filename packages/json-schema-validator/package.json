@@ -2,7 +2,7 @@
   "name": "@ten-bits/json-schema-validator",
   "version": "0.0.2",
   "description": "Validates json schema",
-  "main": "lib/index.js",
+  "main": "lib/JSONSchemaValidator.js",
   "author": "",
   "license": "ISC",
   "scripts": {
