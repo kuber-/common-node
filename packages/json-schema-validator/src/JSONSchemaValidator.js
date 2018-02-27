@@ -7,9 +7,6 @@ export default class JSONSchemaValidator {
    */
   constructor (schema, options) {
     this.schema = schema
-    // mark schemas as async
-    this.schema.$async = true
-    // ajv instance
     this.ajv = new Ajv(Object.assign({
       allErrors: true,
       useDefaults: true
@@ -18,17 +15,25 @@ export default class JSONSchemaValidator {
     this.validator = this.ajv.compile(this.schema)
   }
 
-  internalCreateError (err) {
-    const error = new Error('Parameters validation error!')
-    error.code = 422
-    error.type = 'validation_error'
-    error.data = err.errors
-    return error
+  /**
+   * Mutates data, i.e populates default values from json schema
+   *
+   * @param {*} data
+   */
+  validateSync (data) {
+    const valid = this.validator(data)
+    return valid !== true ? this.validator.errors : valid
   }
 
+  /**
+   * Mutates data, i.e populates default values from json schema
+   *
+   * @param {*} data
+   */
   async validate (data) {
-    return this.validator(data).catch((error) => {
-      return Promise.reject(this.internalCreateError(error))
+    return new Promise((resolve, reject) => {
+      const valid = this.validateSync(data)
+      return valid === true ? resolve(data) : reject(valid)
     })
   }
 }

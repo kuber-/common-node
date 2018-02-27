@@ -18,8 +18,31 @@ describe('JSONSchemaValidator', () => {
 
   it('should implement interface methods', () => {
     expect(validator.schema).toBeDefined()
-    expect(validator.validate).toBeDefined()
     expect(validator.schema).toEqual(schema)
+    expect(validator.validate).toBeDefined()
+    expect(validator.validateSync).toBeDefined()
+  })
+
+  describe('#validateSync', () => {
+    it('should return true on valid', () => {
+      expect(validator.validateSync({ a: 1 })).toEqual(true)
+    })
+
+    it('should populate default values on valid', () => {
+      const data = {}
+      validator.validateSync(data)
+      return expect(data).toEqual({ a: 10 })
+    })
+
+    it('should return errors when given invalid data', async () => {
+      return expect(validator.validateSync({ a: '1' })).toEqual([{
+        keyword: 'type',
+        dataPath: '.a',
+        schemaPath: '#/properties/a/type',
+        params: { type: 'number' },
+        message: 'should be number'
+      }])
+    })
   })
 
   describe('#validate', () => {
@@ -34,19 +57,14 @@ describe('JSONSchemaValidator', () => {
     })
 
     it('should reject with errors when given invalid data', async () => {
-      expect.assertions(4)
-      return validator.validate({ a: '1' }).catch((err) => {
-        expect(err.message).toBe('Parameters validation error!')
-        expect(err.code).toBe(422)
-        expect(err.type).toBe('validation_error')
-        expect(err.data).toEqual([{
-          keyword: 'type',
-          dataPath: '.a',
-          schemaPath: '#/properties/a/type',
-          params: { type: 'number' },
-          message: 'should be number'
-        }])
-      })
+      expect.assertions(1)
+      return expect(validator.validate({ a: '1' })).rejects.toEqual([{
+        keyword: 'type',
+        dataPath: '.a',
+        schemaPath: '#/properties/a/type',
+        params: { type: 'number' },
+        message: 'should be number'
+      }])
     })
   })
 })
