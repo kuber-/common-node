@@ -106,9 +106,20 @@ export default class MongoDataStoreAdapter {
     return docs && docs.length > 0 && docs[0]
   }
 
-  async find (filter = {}, options) {
+  async find (filter, options) {
+    const docs = await this.createCursor(filter, options).toArray()
+    return this.mapDocsFromMongo(docs)
+  }
+
+  async count (filter, options) {
     const { $select, $limit, $offset, $sort, ...query } = filter
-    const cursor = this.collection.find(query)
+    const count = this.collection.count(query, options)
+    return count
+  }
+
+  createCursor (filter = {}, options) {
+    const { $select, $limit, $offset, $sort, ...query } = filter
+    const cursor = this.collection.find(query, options)
 
     // select
     if ($select) {
@@ -138,21 +149,13 @@ export default class MongoDataStoreAdapter {
         } else if (_sort.indexOf('+') === 0) {
           mongoSort[_sort.substring(1)] = 1
         } else {
-          mongoSort[_sort.substring(1)] = 1
+          mongoSort[_sort] = 1
         }
       })
 
       cursor.sort(mongoSort)
     }
 
-    // query
-    const docs = await cursor.toArray()
-    return this.mapDocsFromMongo(docs)
-  }
-
-  async count (filter, options) {
-    const { $select, $limit, $offset, $sort, ...query } = filter
-    const count = this.collection.count(query, options)
-    return count
+    return cursor
   }
 }

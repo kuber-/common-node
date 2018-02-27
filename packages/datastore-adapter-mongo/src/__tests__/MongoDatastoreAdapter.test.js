@@ -68,6 +68,17 @@ const collection = () => ({
 
   findOne: jest.fn(() => docToMongo(getDocWithId())),
 
+  find: jest.fn(() => ({
+    project: jest.fn(),
+    limit: jest.fn(),
+    skip: jest.fn(),
+    sort: jest.fn(),
+    toArray: jest.fn(() => [
+      docToMongo(getDocWithId(1, 1)),
+      docToMongo(getDocWithId(2, 2))
+    ])
+  })),
+
   count: jest.fn(() => 1)
 })
 
@@ -297,7 +308,6 @@ describe('MongoDatastoreAdapter', () => {
 
     it('should return deleted doc id', async () => {
       expect.assertions(1)
-      // not passing objectID here for test purposes
       const id = 1
       const deletedId = await adapter.deleteById(id)
       expect(deletedId).toEqual('1')
@@ -309,6 +319,37 @@ describe('MongoDatastoreAdapter', () => {
       adapter.collection.findOneAndDelete = jest.fn(() => ({ value: null }))
       const deletedId = await adapter.deleteById(id)
       expect(deletedId).toBe(false)
+    })
+  })
+
+  describe('#deleteByIds', () => {
+    it('should call deleteById', async () => {
+      expect.assertions(3)
+      const ids = [mongodb.ObjectID(), mongodb.ObjectID()]
+      const options = {}
+      jest.spyOn(adapter, 'deleteById')
+      await adapter.deleteByIds(ids, options)
+
+      expect(adapter.deleteById).toHaveBeenCalledTimes(2)
+      expect(adapter.deleteById).toHaveBeenCalledWith(ids[0], options)
+      expect(adapter.deleteById).toHaveBeenCalledWith(ids[1], options)
+    })
+
+    it('should return deleted doc ids', async () => {
+      expect.assertions(2)
+      const ids = [mongodb.ObjectID(), mongodb.ObjectID()]
+      adapter.deleteById = jest.fn()
+        .mockReturnValueOnce(ids[0])
+        .mockReturnValueOnce(ids[1])
+      const deletedIds1 = await adapter.deleteByIds(ids)
+      expect(deletedIds1.length).toEqual(2)
+
+      // only one deleted
+      adapter.deleteById = jest.fn()
+        .mockReturnValueOnce(ids[0])
+        .mockReturnValueOnce(false)
+      const deletedIds2 = await adapter.deleteByIds(ids)
+      expect(deletedIds2.length).toEqual(1)
     })
   })
 
@@ -360,6 +401,50 @@ describe('MongoDatastoreAdapter', () => {
     })
   })
 
+  describe('#findByIds', () => {
+    it('should call find', async () => {
+      expect.assertions(2)
+      const ids = [mongodb.ObjectID(), mongodb.ObjectID()]
+      const options = {}
+      jest.spyOn(adapter, 'find')
+      await adapter.findByIds(ids, options)
+
+      expect(adapter.find).toHaveBeenCalledTimes(1)
+      expect(adapter.find).toHaveBeenCalledWith({
+        _id: {
+          $in: ids
+        }
+      }, options)
+    })
+  })
+
+  describe('#findOne', () => {
+    it('should call find', async () => {
+      expect.assertions(2)
+      const filter = { name: 'name-1' }
+      const options = {}
+      jest.spyOn(adapter, 'find')
+      await adapter.findOne(filter, options)
+      expect(adapter.find).toHaveBeenCalledTimes(1)
+      expect(adapter.find).toHaveBeenCalledWith({
+        ...filter,
+        $limit: 1
+      }, options)
+    })
+  })
+
+  describe('#find', () => {
+    it('should call createCursor', async () => {
+      expect.assertions(2)
+      const filter = { name: 'name-1' }
+      const options = {}
+      jest.spyOn(adapter, 'createCursor')
+      await adapter.find(filter, options)
+      expect(adapter.createCursor).toHaveBeenCalledTimes(1)
+      expect(adapter.createCursor).toHaveBeenCalledWith(filter, options)
+    })
+  })
+
   describe('#count', () => {
     it('should call collection#count', async () => {
       expect.assertions(2)
@@ -375,6 +460,54 @@ describe('MongoDatastoreAdapter', () => {
       const filter = { name: 'name-1' }
       const count = await adapter.count(filter)
       expect(count).toEqual(1)
+    })
+  })
+
+  describe('#createCursor', () => {
+    const filter = {
+      name: 'name-1',
+      $select: 'name,state',
+      $offset: 100,
+      $limit: 10,
+      $sort: '-name,+state,suburb'
+    }
+
+    it('should call collection#find', async () => {
+      expect.assertions(2)
+      const options = {}
+      await adapter.createCursor(filter, options)
+      expect(adapter.collection.find).toHaveBeenCalledTimes(1)
+      expect(adapter.collection.find).toHaveBeenCalledWith({
+        name: 'name-1'
+      }, options)
+    })
+
+    it('should project fields if $select is present in filter', async () => {
+      expect.assertions(2)
+      const cursor = adapter.createCursor(filter)
+      expect(cursor.project).toHaveBeenCalledTimes(1)
+      expect(cursor.project).toHaveBeenCalledWith({ name: 1, state: 1 })
+    })
+
+    it('should sort by fields if $sort is present in filter', async () => {
+      expect.assertions(2)
+      const cursor = adapter.createCursor(filter)
+      expect(cursor.sort).toHaveBeenCalledTimes(1)
+      expect(cursor.sort).toHaveBeenCalledWith({ name: -1, state: 1, suburb: 1 })
+    })
+
+    it('should limit if $limit is present in filter', async () => {
+      expect.assertions(2)
+      const cursor = adapter.createCursor(filter)
+      expect(cursor.limit).toHaveBeenCalledTimes(1)
+      expect(cursor.limit).toHaveBeenCalledWith(10)
+    })
+
+    it('should start from offset if $offset is present in filter', async () => {
+      expect.assertions(2)
+      const cursor = adapter.createCursor(filter)
+      expect(cursor.skip).toHaveBeenCalledTimes(1)
+      expect(cursor.skip).toHaveBeenCalledWith(100)
     })
   })
 })
