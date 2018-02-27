@@ -2,7 +2,7 @@
   "name": "@ten-bits/datastore-adapter-mongo",
   "version": "0.0.3",
   "description": "Mongodb adapter for datastore interface",
-  "main": "lib/index.js",
+  "main": "lib/MongoDatastoreAdapter.js",
   "author": "",
   "license": "ISC",
   "scripts": {
