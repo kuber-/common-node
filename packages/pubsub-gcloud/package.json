@@ -2,7 +2,7 @@
   "name": "@ten-bits/pubsub-gcloud",
   "version": "0.0.0",
   "description": "pubsub interface for google cloud pubsub",
-  "main": "index.js",
+  "main": "lib/GooglePubSub.js",
   "scripts": {
     "build": "babel src --out-dir lib"
   },
