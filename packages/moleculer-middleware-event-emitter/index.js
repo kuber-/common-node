@@ -46,18 +46,23 @@ const actionEventEmitterMiddlewareCreator = () => (handler, action) => {
 
   return (ctx) => {
     const config = action.eventEmitter
-    return handler(ctx).then(async (res) => {
-      if (config.success && res.success) {
+    const promise = handler(ctx)
+
+    if (config.success) {
+      promise.then(async (res) => {
         await ctx.emit(config.success, getEventData(ctx, config, res))
-      }
+        return res
+      })
+    }
 
-      // not sure if we need this
-      if (config.error && !res.success) {
-        await ctx.emit(config.error, res)
-      }
+    if (config.error) {
+      promise.catch(async (e) => {
+        await ctx.emit(config.error, e)
+        throw e
+      })
+    }
 
-      return res
-    })
+    return promise
   }
 }
 
