@@ -1,0 +1,16 @@
+{
+  "name": "@ten-bits/moleculer-middleware-event-emitter",
+  "version": "0.0.0",
+  "description": "moleculer middleware for emitting events",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "peerDependencies": {
+    "lodash": "^4.17.5",
+    "moleculer": "^0.12.1"
+  }
+}
