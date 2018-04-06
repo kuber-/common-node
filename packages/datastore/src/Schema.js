@@ -25,7 +25,7 @@ export default class Schema {
   internalCreateError (errors) {
     const error = new Error('Parameters validation error!')
     error.code = 422
-    error.type = 'validation_error'
+    error.type = 'validation_failed'
     error.data = errors
     return error
   }

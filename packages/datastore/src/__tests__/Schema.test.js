@@ -65,7 +65,7 @@ describe('Schema', () => {
       expect(error).toBeInstanceOf(Error)
       expect(error.message).toBe('Parameters validation error!')
       expect(error.code).toBe(422)
-      expect(error.type).toBe('validation_error')
+      expect(error.type).toBe('validation_failed')
       expect(error.data).toEqual([])
     })
   })
@@ -80,7 +80,7 @@ describe('Schema', () => {
       return schema.validate({ name: 1, email: 'email' }).catch((err) => {
         expect(err.message).toBe('Parameters validation error!')
         expect(err.code).toBe(422)
-        expect(err.type).toBe('validation_error')
+        expect(err.type).toBe('validation_failed')
         expect(err.data).toEqual([{
           keyword: 'type',
           dataPath: '.name',
@@ -96,7 +96,7 @@ describe('Schema', () => {
       return schema.validate({ email: 'email' }).catch((err) => {
         expect(err.message).toBe('Parameters validation error!')
         expect(err.code).toBe(422)
-        expect(err.type).toBe('validation_error')
+        expect(err.type).toBe('validation_failed')
         expect(err.data).toEqual([{
           keyword: 'required',
           dataPath: '',
@@ -113,7 +113,7 @@ describe('Schema', () => {
       return schemaWithOnCreate.validate({ email: 'email' }).catch((err) => {
         expect(err.message).toBe('Parameters validation error!')
         expect(err.code).toBe(422)
-        expect(err.type).toBe('validation_error')
+        expect(err.type).toBe('validation_failed')
         expect(err.data).toEqual([{
           keyword: 'required',
           dataPath: '',
