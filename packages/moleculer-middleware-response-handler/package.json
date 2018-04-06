@@ -1,6 +1,6 @@
 {
   "name": "@ten-bits/moleculer-middleware-response-handler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "moleculer middleware for handling response",
   "main": "index.js",
   "scripts": {
