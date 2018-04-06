@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "lodash": "^4.17.5",
     "moleculer": "^0.12.1"
   }
 }
