@@ -13,13 +13,13 @@
   "homepage": "https://github.com/ten-bits/common-node.git",
   "scripts": {
     "build-clean": "rm -rf ./packages/*/lib",
-    "clean-all": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules && npm run build-clean",
+    "clean-all": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules && yarn run build-clean",
     "build": "lerna run build",
-    "publish": "npm run lint && npm run test && npm run build-clean && npm run build && lerna publish",
-    "bootstrap": "npm install; lerna bootstrap; npm run build",
+    "publish": "yarn lint && yarn test && yarn build-clean && yarn build && lerna publish",
+    "bootstrap": "yarn install; lerna bootstrap; yarn build",
     "test": "jest",
-    "test-coverage": "npm run test -- --coverage",
-    "test-watch": "npm run test -- --coverage --watch",
+    "test-coverage": "yarn test -- --coverage",
+    "test-watch": "yarn test -- --coverage --watch",
     "lint": "standard",
     "lint-fix": "standard --fix"
   },

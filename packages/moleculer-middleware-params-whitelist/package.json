@@ -2,14 +2,19 @@
   "name": "@ten-bits/moleculer-middleware-params-whitelist",
   "version": "0.0.1",
   "description": "moleculer middleware for whitelisting params",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel src --out-dir lib"
   },
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "lodash": "^4.17.5",
+    "moleculer": "^0.12.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.5"
+  },
+  "devDependencies": {
     "moleculer": "^0.12.1"
   }
 }

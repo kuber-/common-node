@@ -2,9 +2,9 @@
   "name": "@ten-bits/moleculer-middleware-action-middleware",
   "version": "0.0.1",
   "description": "moleculer middleware for allowing middleware style for actions",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel src --out-dir lib"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +13,8 @@
   },
   "dependencies": {
     "koa-compose": "^4.0.0"
+  },
+  "devDependencies": {
+    "moleculer": "^0.12.1"
   }
 }

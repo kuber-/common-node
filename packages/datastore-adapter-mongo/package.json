@@ -9,9 +9,9 @@
     "build": "babel src --out-dir lib"
   },
   "peerDependencies": {
-    "mongodb": "*"
+    "mongodb": "^3.0.5"
   },
   "devDependencies": {
-    "mongodb": "^3.0.2"
+    "mongodb": "^3.0.5"
   }
 }

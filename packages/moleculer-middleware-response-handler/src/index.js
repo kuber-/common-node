@@ -64,4 +64,4 @@ const actionResponseHandlerMiddlewareCreator = (config = {}) => (handler, action
   }
 }
 
-module.exports = actionResponseHandlerMiddlewareCreator
+export default actionResponseHandlerMiddlewareCreator

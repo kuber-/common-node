@@ -1,4 +1,4 @@
-const pick = require('lodash/pick')
+import pick from 'lodash/pick'
 
 /**
  * @typedef {Object|Array} WhiteListConfig
@@ -57,4 +57,4 @@ const actionParamsWhitelistMiddlewareCreator = () => (handler, action) => {
   }
 }
 
-module.exports = actionParamsWhitelistMiddlewareCreator
+export default actionParamsWhitelistMiddlewareCreator

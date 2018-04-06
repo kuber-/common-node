@@ -41,4 +41,4 @@ const actionErrorMapperMiddlewareCreator = (config) => (handler, action) => {
   }
 }
 
-module.exports = actionErrorMapperMiddlewareCreator
+export default actionErrorMapperMiddlewareCreator

@@ -1,5 +1,5 @@
-const pick = require('lodash/pick')
-const omit = require('lodash/omit')
+import pick from 'lodash/pick'
+import omit from 'lodash/omit'
 
 /**
  * @typedef {Object} EventEmitterConfig
@@ -66,4 +66,4 @@ const actionEventEmitterMiddlewareCreator = () => (handler, action) => {
   }
 }
 
-module.exports = actionEventEmitterMiddlewareCreator
+export default actionEventEmitterMiddlewareCreator

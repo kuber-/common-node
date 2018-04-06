@@ -8,10 +8,10 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "moleculer": "^0.11.10"
-  },
   "peerDependencies": {
-    "moleculer": "^0.11.10"
+    "moleculer": "^0.12.1"
+  },
+  "devDependencies": {
+    "moleculer": "^0.12.1"
   }
 }

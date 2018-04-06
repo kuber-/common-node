@@ -2,13 +2,16 @@
   "name": "@ten-bits/moleculer-middleware-error-mapper",
   "version": "0.0.1",
   "description": "moleculer middleware for mapping errors",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel src --out-dir lib"
   },
   "author": "",
   "license": "ISC",
   "peerDependencies": {
+    "moleculer": "^0.12.1"
+  },
+  "devDependencies": {
     "moleculer": "^0.12.1"
   }
 }
