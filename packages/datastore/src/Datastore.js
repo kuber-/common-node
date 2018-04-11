@@ -173,17 +173,24 @@ export default class Datastore extends EventEmitter {
       throw new Error('update is empty. You must specify at least one field')
     }
 
-    return {
-      update: {
-        $set: flatten(convertedUpdate.$set),
-        $inc: convertedUpdate.$inc ? flatten(convertedUpdate.$inc) : undefined
-      },
+    const returnValue = {
       // we need unflatten version for json schema to validate properly
       validate: flatten.unflatten({
         ...convertedUpdate.$set,
         ...convertedUpdate.$inc
-      })
+      }),
+      update: {}
     }
+
+    if (convertedUpdate.$set) {
+      returnValue.update.$set = flatten(convertedUpdate.$set)
+    }
+
+    if (convertedUpdate.$inc) {
+      returnValue.update.$inc = flatten(convertedUpdate.$inc)
+    }
+
+    return returnValue
   }
 
   /**
