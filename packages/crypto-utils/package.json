@@ -1,0 +1,17 @@
+{
+  "name": "@ten-bits/crypto-utils",
+  "version": "0.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "babel src --out-dir lib"
+  },
+  "dependencies": {
+    "bitcoinjs-lib": "^3.3.2",
+    "ripple-keypairs": "^0.10.1",
+    "ripple-lib": "^0.20.0",
+    "web3": "^1.0.0-beta.33"
+  }
+}
