@@ -18,16 +18,18 @@ export default class GoogleDatastoreAdapter {
    * @param {object} [options.dsOptions]
    * @param {string} [options.namespace]
    * @param {string} [options.kind]
+   * @param {function} [options.generateId]
    */
   constructor (options = {}) {
     this.options = options
   }
 
-  async init (schema) {
-    const { namespace, kind, dsOptions } = this.options
+  async init ({ schema }) {
+    const { namespace, kind, dsOptions, generateId } = this.options
     this.schema = schema
-    this.kind = kind || this.schema.spec.name
+    this.kind = kind || this.schema.name
     this.namespace = namespace
+    this.generateId = generateId || uuid.v4
 
     // datastore is scoped to namespace for multi tenancy
     this.datastore = new Datastore(Object.assign({}, dsOptions, { namespace }))
@@ -38,12 +40,13 @@ export default class GoogleDatastoreAdapter {
       return id
     }
 
-    const path = id ? [this.kind, id] : [this.kind, uuid.v4()]
+    const path = id ? [this.kind, id] : [this.kind, this.generateId()]
     return this.datastore.key(path)
   }
 
   mapKeyToId (key) {
-    return this.datastore.isKey(key) ? key.name : key
+    // if id is string key.name is set, if id is number key.id is set
+    return this.datastore.isKey(key) ? (key.id || key.name) : key
   }
 
   toArray (data) {
@@ -247,5 +250,9 @@ export default class GoogleDatastoreAdapter {
         info: data[1]
       }
     }).catch((e) => console.log(e))
+  }
+
+  async count () {
+    throw new Error('Not Implemented')
   }
 }

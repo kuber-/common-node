@@ -18,7 +18,7 @@ const connect = () => ({
 })
 
 const getDoc = (counter = 1) => ({
-  name: 'name-1'
+  name: `name-${counter}`
 })
 
 const getDocWithId = (id = 1, counter = 1) => ({
