@@ -1,23 +1,21 @@
-// import crypto from 'crypto'
-// import bitcoin, { ECPair } from 'bitcoinjs-lib'
-import bitcoin from 'bitcoinjs-lib'
+import { ECPair } from 'bitcoinjs-lib'
 
-class Btc {
-  client
+/**
+ * Generates a new address for Bitcoin.
+ * @return {AccountAddress} Newly generated account address.
+ */
+const generateAddress = () => {
+  const keyPair = ECPair.makeRandom()
+  const address = keyPair.getAddress()
+  var privateKey = keyPair.toWIF()
 
-  constructor (client) {
-    this.client = client
-  }
-
-  createAddress () {
-    // const keyPair = this.client.ECPair.makeRandom({ rng: () => crypto.randomBytes(32) })
-    // var wif = keyPair.toWIF()
-    // var address = keyPair.getAddress()
-    return {}
+  // address matches /^\w{26,34}$/
+  return {
+    address,
+    privateKey
   }
 }
 
-const btc = new Btc(bitcoin)
-btc.createAddress()
-
-export default btc
+export default {
+  generateAddress
+}

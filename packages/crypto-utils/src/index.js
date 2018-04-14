@@ -1,9 +1,9 @@
-import eth from './eth'
-import xrp from './xrp'
-import btc from './btc'
+import ETH from './eth'
+import XRP from './xrp'
+import BTC from './btc'
 
 export {
-  eth,
-  xrp,
-  btc
+  ETH,
+  XRP,
+  BTC
 }
