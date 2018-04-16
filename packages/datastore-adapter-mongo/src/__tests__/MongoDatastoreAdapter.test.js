@@ -149,7 +149,7 @@ describe('MongoDatastoreAdapter', () => {
       expect(insertedDoc).toEqual(getDocWithId())
     })
 
-    it('should return false id doc is not inserted', async () => {
+    it('should return false if doc is not inserted', async () => {
       expect.assertions(1)
       const doc = getDoc()
       adapter.collection.insertOne = jest.fn(() => ({ insertedCount: 0 }))
@@ -198,7 +198,7 @@ describe('MongoDatastoreAdapter', () => {
       ])
     })
 
-    it('should return false id docs are not inserted', async () => {
+    it('should return false if docs are not inserted', async () => {
       expect.assertions(1)
       const docs = [getDoc(1), getDoc(2)]
       adapter.collection.insertMany = jest.fn(() => ({ insertedCount: 0 }))
@@ -253,7 +253,7 @@ describe('MongoDatastoreAdapter', () => {
       expect(updatedDoc).toEqual(getDocWithId())
     })
 
-    it('should return false id doc is not inserted', async () => {
+    it('should return false if doc is not inserted', async () => {
       expect.assertions(1)
       const id = 1
       const update = {}
@@ -313,7 +313,7 @@ describe('MongoDatastoreAdapter', () => {
       expect(deletedId).toEqual('1')
     })
 
-    it('should return false id doc is not deleted or does not exist', async () => {
+    it('should return false if doc is not deleted or does not exist', async () => {
       expect.assertions(1)
       const id = 1
       adapter.collection.findOneAndDelete = jest.fn(() => ({ value: null }))
