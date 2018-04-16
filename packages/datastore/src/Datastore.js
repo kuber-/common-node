@@ -256,6 +256,11 @@ export default class Datastore extends EventEmitter {
       options
     )
 
+    // adapters return false if not inserted
+    if (!insertedEntity) {
+      return false
+    }
+
     this.notify(`${this.schema.name}.created`, {
       entities: [insertedEntity],
       insertedCount: 1
@@ -281,6 +286,10 @@ export default class Datastore extends EventEmitter {
       entities,
       options
     )
+
+    if (!insertedEntities || insertedEntities.length === 0) {
+      return false
+    }
 
     this.notify(`${this.schema.name}.created`, {
       entities: insertedEntities,
@@ -308,6 +317,10 @@ export default class Datastore extends EventEmitter {
       convertedUpdate.update,
       options
     )
+
+    if (!updatedEntity) {
+      return false
+    }
 
     this.notify(`${this.schema.name}.updated`, {
       entities: [updatedEntity],
@@ -339,6 +352,10 @@ export default class Datastore extends EventEmitter {
       options
     )
 
+    if (!updatedCount || updatedCount === 0) {
+      return false
+    }
+
     this.notify(`${this.schema.name}.updated`, {
       updatedCount,
       update,
@@ -359,15 +376,16 @@ export default class Datastore extends EventEmitter {
   async deleteById (id, options = {}) {
     const deletedId = await this.invokeAdapterMethod('deleteById', id, options)
 
-    // only notify if deleted
-    if (deletedId) {
-      this.notify(`${this.schema.name}.deleted`, {
-        ids: [deletedId],
-        deletedCount: 1
-      })
+    if (!deletedId) {
+      return false
     }
 
-    return deletedId || false
+    this.notify(`${this.schema.name}.deleted`, {
+      ids: [deletedId],
+      deletedCount: 1
+    })
+
+    return deletedId
   }
 
   /**
@@ -385,12 +403,14 @@ export default class Datastore extends EventEmitter {
       options
     )
 
-    if (deletedIds && deletedIds.length > 0) {
-      this.notify(`${this.schema.name}.deleted`, {
-        ids: deletedIds,
-        deletedCount: deletedIds.length
-      })
+    if (!deletedIds || deletedIds.length === 0) {
+      return false
     }
+
+    this.notify(`${this.schema.name}.deleted`, {
+      ids: deletedIds,
+      deletedCount: deletedIds.length
+    })
 
     return deletedIds
   }
@@ -414,12 +434,14 @@ export default class Datastore extends EventEmitter {
       options
     )
 
-    if (deletedCount > 0) {
-      this.notify(`${this.schema.name}.deleted`, {
-        filter,
-        deletedCount
-      })
+    if (!deletedCount) {
+      return false
     }
+
+    this.notify(`${this.schema.name}.deleted`, {
+      filter,
+      deletedCount
+    })
 
     return deletedCount
   }

@@ -232,6 +232,22 @@ describe('Datastore', () => {
         insertedCount: 1
       })
     })
+
+    it('should not notify on unsuccessful insert', async () => {
+      expect.assertions(1)
+      const entity = getEntity()
+      datastore.adapter.insertOne = jest.fn().mockReturnValue(false)
+      await datastore.insertOne(entity)
+      expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should return false if on unsuccessful insert', async () => {
+      expect.assertions(1)
+      const entity = getEntity()
+      datastore.adapter.insertOne = jest.fn().mockReturnValue(false)
+      const returnValue = await datastore.insertOne(entity)
+      expect(returnValue).toBe(false)
+    })
   })
 
   describe('#insertMany', () => {
@@ -280,6 +296,22 @@ describe('Datastore', () => {
         ],
         insertedCount: 2
       })
+    })
+
+    it('should not notify on unsuccessful insert', async () => {
+      expect.assertions(1)
+      const entities = [getEntity(1), getEntity(2)]
+      datastore.adapter.insertMany = jest.fn().mockReturnValue(false)
+      await datastore.insertMany(entities)
+      expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should return false if on unsuccessful insert', async () => {
+      expect.assertions(1)
+      const entities = [getEntity(1), getEntity(2)]
+      datastore.adapter.insertMany = jest.fn().mockReturnValue(false)
+      const returnValue = await datastore.insertMany(entities)
+      expect(returnValue).toBe(false)
     })
   })
 
@@ -331,6 +363,24 @@ describe('Datastore', () => {
         entities: [getEntityWithId()],
         updatedCount: 1
       })
+    })
+
+    it('should not notify on unsuccessful update', async () => {
+      expect.assertions(1)
+      const id = 1
+      const update = { name: 'name-1' }
+      datastore.adapter.updateById = jest.fn().mockReturnValue(false)
+      await datastore.updateById(id, update)
+      expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should return false if on unsuccessful update', async () => {
+      expect.assertions(1)
+      const id = 1
+      const update = { name: 'name-1' }
+      datastore.adapter.updateById = jest.fn().mockReturnValue(false)
+      const returnValue = await datastore.updateById(id, update)
+      expect(returnValue).toBe(false)
     })
   })
 
@@ -384,6 +434,24 @@ describe('Datastore', () => {
         updatedCount: 1
       })
     })
+
+    it('should not notify on unsuccessful update', async () => {
+      expect.assertions(1)
+      const filter = { name: 'name-1' }
+      const update = { name: 'name' }
+      datastore.adapter.updateMany = jest.fn().mockReturnValue(false)
+      await datastore.updateMany(filter, update)
+      expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should return false if on unsuccessful update', async () => {
+      expect.assertions(1)
+      const filter = { name: 'name-1' }
+      const update = { name: 'name' }
+      datastore.adapter.updateMany = jest.fn().mockReturnValue(false)
+      const returnValue = await datastore.updateMany(filter, update)
+      expect(returnValue).toBe(false)
+    })
   })
 
   describe('#deleteById', () => {
@@ -426,6 +494,22 @@ describe('Datastore', () => {
       datastore.adapter.deleteById = jest.fn(() => undefined)
       await datastore.deleteById(id)
       expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should not notify on unsuccessful delete', async () => {
+      expect.assertions(1)
+      const id = 1
+      datastore.adapter.deleteById = jest.fn().mockReturnValue(false)
+      await datastore.deleteById(id)
+      expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should return false if on unsuccessful delete', async () => {
+      expect.assertions(1)
+      const id = 1
+      datastore.adapter.deleteById = jest.fn().mockReturnValue(false)
+      const returnValue = await datastore.deleteById(id)
+      expect(returnValue).toBe(false)
     })
   })
 
@@ -475,6 +559,22 @@ describe('Datastore', () => {
       await datastore.deleteByIds(ids)
       expect(datastore.notify).toHaveBeenCalledTimes(0)
     })
+
+    it('should not notify on unsuccessful delete', async () => {
+      expect.assertions(1)
+      const ids = [1, 2]
+      datastore.adapter.deleteByIds = jest.fn().mockReturnValue(false)
+      await datastore.deleteByIds(ids)
+      expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should return false if on unsuccessful delete', async () => {
+      expect.assertions(1)
+      const ids = [1, 2]
+      datastore.adapter.deleteByIds = jest.fn().mockReturnValue(false)
+      const returnValue = await datastore.deleteByIds(ids)
+      expect(returnValue).toBe(false)
+    })
   })
 
   describe('#deleteMany', () => {
@@ -509,6 +609,22 @@ describe('Datastore', () => {
       datastore.adapter.deleteMany = jest.fn(() => 0)
       await datastore.deleteMany(filter)
       expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should not notify on unsuccessful delete', async () => {
+      expect.assertions(1)
+      const filter = { name: 'name-1' }
+      datastore.adapter.deleteMany = jest.fn().mockReturnValue(false)
+      await datastore.deleteMany(filter)
+      expect(datastore.notify).toHaveBeenCalledTimes(0)
+    })
+
+    it('should return false if on unsuccessful delete', async () => {
+      expect.assertions(1)
+      const filter = { name: 'name-1' }
+      datastore.adapter.deleteMany = jest.fn().mockReturnValue(false)
+      const returnValue = await datastore.deleteMany(filter)
+      expect(returnValue).toBe(false)
     })
   })
 
