@@ -1,0 +1,20 @@
+{
+  "name": "@ten-bits/datastore-adapter-knex",
+  "version": "0.0.6",
+  "description": "Knex adapter for datastore interface",
+  "main": "lib/KnexDatastoreAdapter.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "babel src --out-dir lib"
+  },
+  "peerDependencies": {
+    "knex": "^0.14.6"
+  },
+  "devDependencies": {
+    "knex": "^0.14.6"
+  },
+  "dependencies": {
+    "pg": "^7.4.1"
+  }
+}
