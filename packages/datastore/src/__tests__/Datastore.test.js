@@ -28,6 +28,11 @@ const defaultAdapter = () => ({
   count: jest.fn(() => 1)
 })
 
+const transactionAwareAdatper = () => ({
+  init: jest.fn(),
+  transaction: jest.fn()
+})
+
 const defaultSchemaName = 'defaultSchema'
 const defaultSchema = () => new Schema({
   name: defaultSchemaName,
@@ -69,6 +74,7 @@ describe('Datastore', () => {
     expect(datastore.findOne).toBeDefined()
     expect(datastore.find).toBeDefined()
     expect(datastore.count).toBeDefined()
+    expect(datastore.transaction).toBeDefined()
   })
 
   it('should have private methods', () => {
@@ -76,6 +82,15 @@ describe('Datastore', () => {
     expect(datastore.notify).toBeDefined()
     expect(datastore.convertUpdate).toBeDefined()
     expect(datastore.invokeAdapterMethod).toBeDefined()
+  })
+
+  describe('#invokeAdapterMethod', async () => {
+    it('should throw if method does not exist on adapter', async () => {
+      expect.assertions(1)
+      return expect(datastore.invokeAdapterMethod('non-existent-method')).rejects.toMatchObject({
+        message: 'Adapter provided did not implement non-existent-method'
+      })
+    })
   })
 
   describe('#convertUpdate', () => {
@@ -710,6 +725,19 @@ describe('Datastore', () => {
       const filter = { name: 'name-1' }
       const count = await datastore.count(filter)
       expect(count).toBe(1)
+    })
+  })
+
+  describe('#transaction', () => {
+    beforeEach(() => {
+      datastore.adapter = transactionAwareAdatper()
+    })
+
+    it('should call adapter#transaction', async () => {
+      expect.assertions(1)
+      const cb = () => null
+      await datastore.transaction(cb)
+      expect(datastore.adapter.transaction).toHaveBeenCalledWith(cb)
     })
   })
 })

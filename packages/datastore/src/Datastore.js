@@ -237,6 +237,10 @@ export default class Datastore extends EventEmitter {
     // last argument for adapter method is options
     const options = rest.pop()
     const adapter = await this.getAdapter(options)
+    if (!adapter[method]) {
+      throw new Error(`Adapter provided did not implement ${method}`)
+    }
+
     return adapter[method](...rest, options)
   }
 
@@ -499,5 +503,9 @@ export default class Datastore extends EventEmitter {
    */
   async count (filter, options = {}) {
     return this.invokeAdapterMethod('count', filter, options)
+  }
+
+  async transaction (cb) {
+    return this.invokeAdapterMethod('transaction', cb)
   }
 }
