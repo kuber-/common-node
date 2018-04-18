@@ -51,10 +51,12 @@ const moleculerDatastoreMixin = (config) => {
       },
 
       async invokeDatastoreMethod (method, ctx, ...rest) {
-        const adapter = this.getDatastore()
+        const datastore = this.getDatastore()
         const options = rest.pop()
-        const mergedOptions = Object.assign({}, ctx.meta, options)
-        return adapter[method](...rest, mergedOptions)
+        const mergedOptions = Object.assign({
+          meta: ctx.meta
+        }, options)
+        return datastore[method](...rest, mergedOptions)
       },
 
       async insertOne (ctx, entity, options) {
