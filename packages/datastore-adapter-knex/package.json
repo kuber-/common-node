@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "knex": "^0.14.6"
+  },
+  "dependencies": {
+    "is-plain-object": "^2.0.4"
   }
 }

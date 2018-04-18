@@ -1,4 +1,5 @@
 import knex from 'knex'
+import knexify from './knexify'
 
 export default class KnexDataStoreAdapter {
   /**
@@ -35,18 +36,20 @@ export default class KnexDataStoreAdapter {
   }
 
   async updateById (id, update, options) {
-    return this.getDBFromOptions(options).where('id', id).update(update)
+    return this.getDBFromOptions(options).where('id', id).update(update.$set, '*')
   }
 
   async updateMany (filter, update, options) {
-    return this.getDBFromOptions(options).where(filter).update(update)
+    return this.getDBFromOptions(options).where(filter).update(update.$set)
   }
 
   async deleteById (id, options) {
-    return this.getDBFromOptions(options).where('id', id).delete()
+    const rowsAffected = await this.getDBFromOptions(options).where('id', id).delete()
+    return rowsAffected > 0 && id
   }
 
   async deleteByIds (ids, options) {
+    // TODO return deleted ids instead of count
     return this.getDBFromOptions(options).whereIn('id', ids).delete()
   }
 
@@ -71,7 +74,8 @@ export default class KnexDataStoreAdapter {
   }
 
   async count (filter, options) {
-    return this.getDBFromOptions(options).where(filter).count('id')
+    const result = await this.getDBFromOptions(options).where(filter).count('id')
+    return result && result.length > 0 ? parseInt(result[0].count) : 0
   }
 
   async transaction (cb) {
@@ -80,7 +84,8 @@ export default class KnexDataStoreAdapter {
 
   createCursor (filter = {}, options) {
     const { $select, $limit, $offset, $sort, ...query } = filter
-    const cursor = this.getDBFromOptions(options).where(query)
+    const cursor = this.getDBFromOptions(options)
+    knexify(cursor, query)
 
     // select
     if ($select) {
