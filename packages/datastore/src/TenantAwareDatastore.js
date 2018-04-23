@@ -1,4 +1,4 @@
-import Datastore from './datastore'
+import Datastore from './Datastore'
 import assert from 'assert'
 import get from 'lodash/get'
 
