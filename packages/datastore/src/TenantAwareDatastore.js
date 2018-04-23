@@ -24,6 +24,14 @@ export default class TenantAwareDatastrore extends Datastore {
   }
 
   /**
+   * This will be required when we want to bypass tenantId restrictions
+   * @param {*} options
+   */
+  shouldIgnoreTenantId (options) {
+    return get(options, 'meta.ignoreTenantId', false)
+  }
+
+  /**
    *
    * @param {array|object} docs
    * @param {*} options
@@ -74,41 +82,43 @@ export default class TenantAwareDatastrore extends Datastore {
 
   async insertOne (doc, options) {
     return super.insertOne(
-      this.ensureTenantOnDoc(doc, options),
+      this.shouldIgnoreTenantId(options) ? doc : this.ensureTenantOnDoc(doc, options),
       options
     )
   }
 
   async insertMany (docs, options) {
     return super.insertMany(
-      this.ensureTenantOnDoc(docs, options),
+      this.shouldIgnoreTenantId(options) ? docs : this.ensureTenantOnDoc(docs, options),
       options
     )
   }
 
   async updateById (id, update, options) {
-    const ownedIds = await this.getDocIdsOwnedByTenant(id, options)
+    const shouldIgnore = this.shouldIgnoreTenantId(options)
+    const ownedIds = shouldIgnore ? [id] : await this.getDocIdsOwnedByTenant(id, options)
     if (ownedIds.length === 0) {
       return false
     }
 
     return super.updateById(
       ownedIds[0],
-      this.ensureTenantOnDoc(update, options),
+      shouldIgnore ? update : this.ensureTenantOnDoc(update, options),
       options
     )
   }
 
   async updateMany (filter, update, options) {
+    const shouldIgnore = this.shouldIgnoreTenantId(options)
     return super.updateById(
-      this.ensureTenantOnFilter(filter, options),
-      this.ensureTenantOnDoc(update, options),
+      shouldIgnore ? filter : this.ensureTenantOnFilter(filter, options),
+      shouldIgnore ? update : this.ensureTenantOnDoc(update, options),
       options
     )
   }
 
   async deleteById (id, options) {
-    const ownedIds = await this.getDocIdsOwnedByTenant(id, options)
+    const ownedIds = this.shouldIgnoreTenantId(options) ? [id] : await this.getDocIdsOwnedByTenant(id, options)
     if (ownedIds.length === 0) {
       return false
     }
@@ -117,7 +127,7 @@ export default class TenantAwareDatastrore extends Datastore {
   }
 
   async deleteByIds (ids, options) {
-    const ownedIds = await this.getDocIdsOwnedByTenant(ids, options)
+    const ownedIds = this.shouldIgnoreTenantId(options) ? ids : await this.getDocIdsOwnedByTenant(ids, options)
     if (ownedIds.length === 0) {
       return []
     }
@@ -127,13 +137,13 @@ export default class TenantAwareDatastrore extends Datastore {
 
   async deleteMany (filter, options) {
     return super.deleteMany(
-      this.ensureTenantOnFilter(filter, options),
+      this.shouldIgnoreTenantId(options) ? filter : this.ensureTenantOnFilter(filter, options),
       options
     )
   }
 
   async findById (id, options) {
-    const ownedIds = await this.getDocIdsOwnedByTenant(id, options)
+    const ownedIds = this.shouldIgnoreTenantId(options) ? [id] : await this.getDocIdsOwnedByTenant(id, options)
     if (ownedIds.length === 0) {
       return false
     }
@@ -142,7 +152,7 @@ export default class TenantAwareDatastrore extends Datastore {
   }
 
   async findByIds (ids, options) {
-    const ownedIds = await this.getDocIdsOwnedByTenant(ids, options)
+    const ownedIds = this.shouldIgnoreTenantId(options) ? ids : await this.getDocIdsOwnedByTenant(ids, options)
     if (ownedIds.length === 0) {
       return []
     }
@@ -152,21 +162,21 @@ export default class TenantAwareDatastrore extends Datastore {
 
   async findOne (filter, options) {
     return super.findOne(
-      this.ensureTenantOnFilter(filter, options),
+      this.shouldIgnoreTenantId(options) ? filter : this.ensureTenantOnFilter(filter, options),
       options
     )
   }
 
   async find (filter, options) {
     return super.find(
-      this.ensureTenantOnFilter(filter, options),
+      this.shouldIgnoreTenantId(options) ? filter : this.ensureTenantOnFilter(filter, options),
       options
     )
   }
 
   async count (filter, options) {
     return super.count(
-      this.ensureTenantOnFilter(filter, options),
+      this.shouldIgnoreTenantId(options) ? filter : this.ensureTenantOnFilter(filter, options),
       options
     )
   }
