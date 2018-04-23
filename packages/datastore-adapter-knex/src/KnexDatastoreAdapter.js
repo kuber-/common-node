@@ -36,7 +36,7 @@ export default class KnexDataStoreAdapter {
   }
 
   async updateById (id, update, options) {
-    return this.getDBFromOptions(options).where('id', id).update(update.$set, '*')
+    return this.getDBFromOptions(options).where('id', id).update(update.$set, '*').then(rows => rows[0])
   }
 
   async updateMany (filter, update, options) {
@@ -58,7 +58,7 @@ export default class KnexDataStoreAdapter {
   }
 
   async findById (id, options) {
-    return this.getDBFromOptions(options).where('id', id)
+    return this.getDBFromOptions(options).where('id', id).first()
   }
 
   async findByIds (ids, options) {
