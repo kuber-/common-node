@@ -1,4 +1,4 @@
-const action = () => async function updateAction (ctx) {
+const action = () => async function updateByIdAction (ctx) {
   const { id, ...update } = ctx.params
 
   // NOTE:
@@ -7,7 +7,7 @@ const action = () => async function updateAction (ctx) {
   return this.updateById(ctx, id, update)
 }
 
-const updateActionMixin = (actionName = 'update') => ({
+const updateByIdActionMixin = (actionName = 'updateById') => ({
   actionName,
   handler: action(),
   params: {
@@ -15,4 +15,4 @@ const updateActionMixin = (actionName = 'update') => ({
   }
 })
 
-export default updateActionMixin
+export default updateByIdActionMixin

@@ -1,17 +1,28 @@
-import createAction from './createActionMixin'
-import insertAction from './insertActionMixin'
-import updateAction from './updateActionMixin'
+import insertOneAction from './insertOneActionMixin'
+import insertManyAction from './insertManyActionMixin'
+import updateByIdAction from './updateByIdActionMixin'
 import removeAction from './removeActionMixin'
 import getAction from './getActionMixin'
 import findAction from './findActionMixin'
+import findOneAction from './findOneActionMixin'
+import countAction from './countActionMixin'
 
 const availableActions = {
-  create: createAction,
-  insert: insertAction,
-  update: updateAction,
+  create: insertOneAction,
+  insert: insertManyAction,
+  update: updateByIdAction,
   remove: removeAction,
   get: getAction,
-  find: findAction
+  insertOne: insertOneAction,
+  insertMany: insertManyAction,
+  updateById: updateByIdAction,
+  deleteById: removeAction,
+  deleteByIds: removeAction,
+  findById: getAction,
+  findByIds: getAction,
+  find: findAction,
+  findOne: findOneAction,
+  count: countAction
 }
 
 /**

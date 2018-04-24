@@ -1,10 +1,10 @@
-const action = () => async function insertAction (ctx) {
+const action = () => async function insertManyAction (ctx) {
   const { entities } = ctx.params
 
   return this.insertMany(ctx, entities)
 }
 
-const insertActionMixin = (actionName = 'insert') => ({
+const insertManyActionMixin = (actionName = 'insertMany') => ({
   actionName,
   handler: action(),
   params: {
@@ -12,4 +12,4 @@ const insertActionMixin = (actionName = 'insert') => ({
   }
 })
 
-export default insertActionMixin
+export default insertManyActionMixin
