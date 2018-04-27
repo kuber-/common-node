@@ -1,6 +1,5 @@
 const action = () => async function findOneAction (ctx) {
-  const { filter } = ctx.params
-  return this.findOne(ctx, filter)
+  return this.findOne(ctx, ctx.params)
 }
 
 const findOneActionMixin = (actionName = 'findOne') => ({
