@@ -60,7 +60,7 @@ const moleculerDatastoreMixin = (
 
   const availableActions = !configWithDefaults.extended ? restActions : {
     ...restActions,
-    extendedActions
+    ...extendedActions
   }
 
   let actions = {}
