@@ -7,12 +7,15 @@ import findAction from './findActionMixin'
 import findOneAction from './findOneActionMixin'
 import countAction from './countActionMixin'
 
-const availableActions = {
+const restActions = {
   create: insertOneAction,
-  insert: insertManyAction,
   update: updateByIdAction,
   remove: removeAction,
   get: getAction,
+  find: findAction
+}
+
+const extendedActions = {
   insertOne: insertOneAction,
   insertMany: insertManyAction,
   updateById: updateByIdAction,
@@ -20,25 +23,45 @@ const availableActions = {
   deleteByIds: removeAction,
   findById: getAction,
   findByIds: getAction,
-  find: findAction,
   findOne: findOneAction,
   count: countAction
 }
 
 /**
+ * @param {object} datastore
+ * @param {string} [prefix]
  * @param {object} [config]
+ * @param {boolean} [config.extended]
  * @param {boolean} [config.disableActions] true => disable actions
- * @param {boolean|string} config.create false disable action, user.create => will be action name
- * @param {boolean|string} config.insert false disable action, user.insert => will be action name
- * @param {boolean|string} config.update false disable action, user.update => will be action name
- * @param {boolean|string} config.remove false disable action, user.remove => will be action name
- * @param {boolean|string} config.get false disable action, user.get => will be action name
- * @param {boolean|string} config.find false disable action, user.find => will be action name
+ * @param {boolean|string} [config.create] false disable action, user.create => will be action name
+ * @param {boolean|string} [config.update] false disable action, user.update => will be action name
+ * @param {boolean|string} [config.remove] false disable action, user.remove => will be action name
+ * @param {boolean|string} [config.get] false disable action, user.get => will be action name
+ * @param {boolean|string} [config.find] false disable action, user.find => will be action name
+ * @param {boolean|string} [config.insertOne] false disable action, user.insertone => will be action name
+ * @param {boolean|string} [config.insertMany] false disable action, user.insertMany => will be action name
+ * @param {boolean|string} [config.updateById] false disable action, user.updateById => will be action name
+ * @param {boolean|string} [config.deleteById] false disable action, user.deleteById => will be action name
+ * @param {boolean|string} [config.deleteByIds] false disable action, user.deleteByIds => will be action name
+ * @param {boolean|string} [config.findById] false disable action, user.findById => will be action name
+ * @param {boolean|string} [config.findByIds] false disable action, user.findByIds => will be action name
+ * @param {boolean|string} [config.findOne] false disable action, user.findOne => will be action name
+ * @param {boolean|string} [config.count] false disable action, user.count => will be action name
  */
-const moleculerDatastoreMixin = (config) => {
+const moleculerDatastoreMixin = (
+  datastore,
+  prefix,
+  config
+) => {
   const configWithDefaults = Object.assign({
-    disableActions: false
+    disableActions: false,
+    extended: false
   }, config)
+
+  const availableActions = !config.extended ? restActions : {
+    ...restActions,
+    extendedActions
+  }
 
   let actions = {}
 
@@ -49,7 +72,8 @@ const moleculerDatastoreMixin = (config) => {
       if (configWithDefaults[availableActionName] !== false) {
         // use action name if given
         const actionName = configWithDefaults[availableActionName] || availableActionName
-        actions[actionName] = availableActions[availableActionName](actionName)
+        const actionNameWithPrefix = prefix ? `${prefix}.${actionName}` : actionName
+        actions[actionNameWithPrefix] = availableActions[availableActionName](actionName)
       }
     })
   }
@@ -58,7 +82,7 @@ const moleculerDatastoreMixin = (config) => {
     actions,
     methods: {
       getDatastore () {
-        return this.datastore
+        return datastore
       },
 
       async invokeDatastoreMethod (method, ctx, ...rest) {
@@ -117,13 +141,6 @@ const moleculerDatastoreMixin = (config) => {
       async count (ctx, filter, options) {
         return this.invokeDatastoreMethod('count', ctx, filter, options)
       }
-    },
-    created () {
-      if (!this.schema.datastore) {
-        throw new Error('datastore is missing in service schema')
-      }
-
-      this.datastore = this.schema.datastore
     }
   }
 }
