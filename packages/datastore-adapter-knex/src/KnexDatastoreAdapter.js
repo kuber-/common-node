@@ -6,15 +6,17 @@ export default class KnexDataStoreAdapter {
    * @param {object} options
    * @param {string} [options.tableName]
    * @param {object} [options.knexOptions]
+   * @param {string} [options.identifier = id]
    */
   constructor (options = {}) {
     this.options = options
   }
 
   async init ({ schema }) {
-    const { knexOptions, tableName } = this.options
+    const { knexOptions, tableName, identifier } = this.options
     this.schema = schema
     this.tableName = tableName || schema.name
+    this.identifier = identifier || 'id'
     this.db = knex(knexOptions)
   }
 
@@ -36,7 +38,7 @@ export default class KnexDataStoreAdapter {
   }
 
   async updateById (id, update, options) {
-    return this.getDBFromOptions(options).where('id', id).update(update.$set, '*').then(rows => rows[0])
+    return this.getDBFromOptions(options).where(this.identifier, id).update(update.$set, '*').then(rows => rows[0])
   }
 
   async updateMany (filter, update, options) {
@@ -44,13 +46,13 @@ export default class KnexDataStoreAdapter {
   }
 
   async deleteById (id, options) {
-    const rowsAffected = await this.getDBFromOptions(options).where('id', id).delete()
+    const rowsAffected = await this.getDBFromOptions(options).where(this.identifier, id).delete()
     return rowsAffected > 0 && id
   }
 
   async deleteByIds (ids, options) {
     // TODO return deleted ids instead of count
-    return this.getDBFromOptions(options).whereIn('id', ids).delete()
+    return this.getDBFromOptions(options).whereIn(this.identifier, ids).delete()
   }
 
   async deleteMany (filter, options) {
@@ -58,11 +60,11 @@ export default class KnexDataStoreAdapter {
   }
 
   async findById (id, options) {
-    return this.getDBFromOptions(options).where('id', id).first()
+    return this.getDBFromOptions(options).where(this.identifier, id).first()
   }
 
   async findByIds (ids, options) {
-    return this.getDBFromOptions(options).whereIn('id', ids)
+    return this.getDBFromOptions(options).whereIn(this.identifier, ids)
   }
 
   async findOne (filter, options) {
@@ -74,7 +76,7 @@ export default class KnexDataStoreAdapter {
   }
 
   async count (filter, options) {
-    const result = await this.getDBFromOptions(options).where(filter).count('id')
+    const result = await this.getDBFromOptions(options).where(filter).count(this.identifier)
     return result && result.length > 0 ? parseInt(result[0].count) : 0
   }
 
