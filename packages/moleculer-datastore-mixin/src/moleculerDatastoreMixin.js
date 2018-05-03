@@ -7,31 +7,20 @@ import findAction from './findActionMixin'
 import findOneAction from './findOneActionMixin'
 import countAction from './countActionMixin'
 
-const restActions = {
+const availableActions = {
   create: insertOneAction,
   update: updateByIdAction,
   remove: removeAction,
   get: getAction,
-  find: findAction
-}
-
-const extendedActions = {
-  insertOne: insertOneAction,
-  insertMany: insertManyAction,
-  updateById: updateByIdAction,
-  deleteById: removeAction,
-  deleteByIds: removeAction,
-  findById: getAction,
-  findByIds: getAction,
+  find: findAction,
   findOne: findOneAction,
+  insert: insertManyAction,
   count: countAction
 }
 
 /**
  * @param {object} datastore
- * @param {string} [prefix]
  * @param {object} [config]
- * @param {boolean} [config.extended]
  * @param {boolean} [config.disableActions] true => disable actions
  * @param {boolean|string} [config.create] false disable action, user.create => will be action name
  * @param {boolean|string} [config.update] false disable action, user.update => will be action name
@@ -54,14 +43,8 @@ const moleculerDatastoreMixin = (
   config
 ) => {
   const configWithDefaults = Object.assign({
-    disableActions: false,
-    extended: false
+    disableActions: false
   }, config)
-
-  const availableActions = !configWithDefaults.extended ? restActions : {
-    ...restActions,
-    ...extendedActions
-  }
 
   let actions = {}
 
@@ -72,8 +55,7 @@ const moleculerDatastoreMixin = (
       if (configWithDefaults[availableActionName] !== false) {
         // use action name if given
         const actionName = configWithDefaults[availableActionName] || availableActionName
-        const actionNameWithPrefix = prefix ? `${prefix}.${actionName}` : actionName
-        actions[actionNameWithPrefix] = availableActions[availableActionName](actionName)
+        actions[actionName] = availableActions[availableActionName](actionName)
       }
     })
   }
