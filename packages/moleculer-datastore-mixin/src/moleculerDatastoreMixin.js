@@ -88,9 +88,7 @@ const moleculerDatastoreMixin = (
       async invokeDatastoreMethod (method, ctx, ...rest) {
         const datastore = this.getDatastore()
         const options = rest.pop()
-        const mergedOptions = Object.assign({
-          meta: ctx.meta
-        }, options)
+        const mergedOptions = Object.assign({}, ctx.meta, options)
         return datastore[method](...rest, mergedOptions)
       },
 
