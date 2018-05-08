@@ -76,7 +76,7 @@ export default class KnexDataStoreAdapter {
     return this.db.transaction(cb)
   }
 
-  async raw () {
+  raw () {
     return this.db(this.tableName)
   }
 
