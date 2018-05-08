@@ -107,7 +107,7 @@ export default class MongoDataStoreAdapter {
     return count
   }
 
-  raw () {
+  async raw () {
     return this.collection
   }
 

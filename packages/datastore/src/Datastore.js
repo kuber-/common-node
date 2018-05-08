@@ -443,7 +443,7 @@ export default class Datastore extends EventEmitter {
     return this.invokeAdapterMethod('transaction', cb)
   }
 
-  raw () {
+  async raw () {
     return this.invokeAdapterMethod('raw')
   }
 }
