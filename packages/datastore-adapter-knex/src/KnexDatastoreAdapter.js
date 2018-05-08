@@ -77,7 +77,7 @@ export default class KnexDataStoreAdapter {
   }
 
   async raw () {
-    return this.db
+    return this.db(this.tableName)
   }
 
   createCursor (filter = {}, options) {
