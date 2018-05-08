@@ -110,6 +110,10 @@ const moleculerDatastoreMixin = (
         return this.invokeDatastoreMethod('find', ctx, filter, options)
       },
 
+      async raw (ctx) {
+        return this.invokeDatastoreMethod('raw', ctx)
+      },
+
       async count (ctx, filter, options) {
         return this.invokeDatastoreMethod('count', ctx, filter, options)
       }
