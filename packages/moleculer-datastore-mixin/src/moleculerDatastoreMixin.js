@@ -86,20 +86,12 @@ const moleculerDatastoreMixin = (
         return this.invokeDatastoreMethod('updateById', ctx, id, update, options)
       },
 
-      async updateMany (ctx, filter, update, options) {
-        return this.invokeDatastoreMethod('updateMany', ctx, filter, update, options)
-      },
-
       async deleteById (ctx, id, options) {
         return this.invokeDatastoreMethod('deleteById', ctx, id, options)
       },
 
       async deleteByIds (ctx, ids, options) {
         return this.invokeDatastoreMethod('deleteByIds', ctx, ids, options)
-      },
-
-      async deleteMany (ctx, filter, options) {
-        return this.invokeDatastoreMethod('deleteMany', ctx, filter, options)
       },
 
       async findById (ctx, id, options) {

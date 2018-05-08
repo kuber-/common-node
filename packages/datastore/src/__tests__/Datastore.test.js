@@ -65,16 +65,15 @@ describe('Datastore', () => {
     expect(datastore.insertOne).toBeDefined()
     expect(datastore.insertMany).toBeDefined()
     expect(datastore.updateById).toBeDefined()
-    expect(datastore.updateMany).toBeDefined()
     expect(datastore.deleteById).toBeDefined()
     expect(datastore.deleteByIds).toBeDefined()
-    expect(datastore.deleteMany).toBeDefined()
     expect(datastore.findById).toBeDefined()
     expect(datastore.findByIds).toBeDefined()
     expect(datastore.findOne).toBeDefined()
     expect(datastore.find).toBeDefined()
     expect(datastore.count).toBeDefined()
     expect(datastore.transaction).toBeDefined()
+    expect(datastore.raw).toBeDefined()
   })
 
   it('should have private methods', () => {
@@ -243,8 +242,7 @@ describe('Datastore', () => {
       const entity = getEntity()
       await datastore.insertOne(entity)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.created`, {
-        entities: [getEntityWithId()],
-        insertedCount: 1
+        entities: [getEntityWithId()]
       })
     })
 
@@ -308,8 +306,7 @@ describe('Datastore', () => {
         entities: [
           getEntityWithId(1, 1),
           getEntityWithId(2, 2)
-        ],
-        insertedCount: 2
+        ]
       })
     })
 
@@ -375,8 +372,7 @@ describe('Datastore', () => {
       const update = { name: 'name-1' }
       await datastore.updateById(id, update)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.updated`, {
-        entities: [getEntityWithId()],
-        updatedCount: 1
+        entities: [getEntityWithId()]
       })
     })
 
@@ -395,76 +391,6 @@ describe('Datastore', () => {
       const update = { name: 'name-1' }
       datastore.adapter.updateById = jest.fn().mockReturnValue(false)
       const returnValue = await datastore.updateById(id, update)
-      expect(returnValue).toBe(false)
-    })
-  })
-
-  describe('#updateMany', () => {
-    it('should convert given update', async () => {
-      expect.assertions(2)
-      const filter = { name: 'name-1' }
-      const update = { name: 'name' }
-      jest.spyOn(datastore, 'convertUpdate')
-      await datastore.updateMany(filter, update)
-      expect(datastore.convertUpdate).toHaveBeenCalledTimes(1)
-      expect(datastore.convertUpdate).toHaveBeenCalledWith(update)
-    })
-
-    it('should validate update', async () => {
-      expect.assertions(2)
-      const filter = { name: 'name-1' }
-      const update = { name: 'name' }
-      const convertedUpdate = datastore.convertUpdate(update)
-      await datastore.updateMany(filter, update)
-      expect(datastore.schema.validate).toHaveBeenCalledTimes(1)
-      expect(datastore.schema.validate).toHaveBeenCalledWith(convertedUpdate.validate, true)
-    })
-
-    it('should call adapter#updateMany', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      const update = { name: 'name' }
-      const convertedUpdate = datastore.convertUpdate(update)
-      const options = {}
-      await datastore.updateMany(filter, update, options)
-      expect(datastore.adapter.updateMany).toHaveBeenCalledWith(filter, convertedUpdate.update, options)
-    })
-
-    it('should return updated count', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      const update = { name: 'name' }
-      const updatedCount = await datastore.updateMany(filter, update)
-      expect(updatedCount).toEqual(1)
-    })
-
-    it('should notify on successful update', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      const update = { name: 'name' }
-      await datastore.updateMany(filter, update)
-      expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.updated`, {
-        filter,
-        update,
-        updatedCount: 1
-      })
-    })
-
-    it('should not notify on unsuccessful update', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      const update = { name: 'name' }
-      datastore.adapter.updateMany = jest.fn().mockReturnValue(false)
-      await datastore.updateMany(filter, update)
-      expect(datastore.notify).toHaveBeenCalledTimes(0)
-    })
-
-    it('should return false if on unsuccessful update', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      const update = { name: 'name' }
-      datastore.adapter.updateMany = jest.fn().mockReturnValue(false)
-      const returnValue = await datastore.updateMany(filter, update)
       expect(returnValue).toBe(false)
     })
   })
@@ -490,8 +416,7 @@ describe('Datastore', () => {
       const id = 1
       await datastore.deleteById(id)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.deleted`, {
-        ids: [id],
-        deletedCount: 1
+        ids: [id]
       })
     })
 
@@ -554,16 +479,14 @@ describe('Datastore', () => {
       const ids = [1, 2]
       await datastore.deleteByIds(ids)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.deleted`, {
-        ids,
-        deletedCount: ids.length
+        ids
       })
 
       // only 1 deleted
       datastore.adapter.deleteByIds = jest.fn(() => [1])
       await datastore.deleteByIds(ids)
       expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.deleted`, {
-        ids: [1],
-        deletedCount: 1
+        ids: [1]
       })
     })
 
@@ -588,57 +511,6 @@ describe('Datastore', () => {
       const ids = [1, 2]
       datastore.adapter.deleteByIds = jest.fn().mockReturnValue(false)
       const returnValue = await datastore.deleteByIds(ids)
-      expect(returnValue).toBe(false)
-    })
-  })
-
-  describe('#deleteMany', () => {
-    it('should call adapter#deleteMany', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      const options = {}
-      await datastore.deleteMany(filter, options)
-      expect(datastore.adapter.deleteMany).toHaveBeenCalledWith(filter, options)
-    })
-
-    it('should return deleted count', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      const deletedCount = await datastore.deleteMany(filter)
-      expect(deletedCount).toEqual(1)
-    })
-
-    it('should notify on successful delete', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      await datastore.deleteMany(filter)
-      expect(datastore.notify).toHaveBeenCalledWith(`${defaultSchemaName}.deleted`, {
-        filter,
-        deletedCount: 1
-      })
-    })
-
-    it('should not notify if nothing is deleted', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      datastore.adapter.deleteMany = jest.fn(() => 0)
-      await datastore.deleteMany(filter)
-      expect(datastore.notify).toHaveBeenCalledTimes(0)
-    })
-
-    it('should not notify on unsuccessful delete', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      datastore.adapter.deleteMany = jest.fn().mockReturnValue(false)
-      await datastore.deleteMany(filter)
-      expect(datastore.notify).toHaveBeenCalledTimes(0)
-    })
-
-    it('should return false if on unsuccessful delete', async () => {
-      expect.assertions(1)
-      const filter = { name: 'name-1' }
-      datastore.adapter.deleteMany = jest.fn().mockReturnValue(false)
-      const returnValue = await datastore.deleteMany(filter)
       expect(returnValue).toBe(false)
     })
   })

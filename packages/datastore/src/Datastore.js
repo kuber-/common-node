@@ -26,7 +26,6 @@ import flatten from 'flat'
  * @event Datastore#{name}.created
  * @type {object}
  * @property {array} entities
- * @property {number} insertedCount
  */
 
 /**
@@ -34,9 +33,7 @@ import flatten from 'flat'
  *
  * @event Datastore#{name}.updated
  * @type {object}
- * @property {array} [entities] if event is trigged because of updateMany this will not be present
- * @property {number} updatedCount
- * @property {object} [filter] if event is trigged because of updateMany this will be present
+ * @property {array} entities
  */
 
 /**
@@ -44,10 +41,15 @@ import flatten from 'flat'
  *
  * @event Datastore#{name}.deleted
  * @type {object}
- * @property {array} [ids] if event is trigged because of deleteMany this will not be present
- * @property {number} deletedCount
- * @property {object} [filter] if event is trigged because of deleteMany this will be present
+ * @property {array} ids
  */
+
+/**
+  * Transaction callback
+  *
+  * @callback Datastore~transactionCallback
+  * @param {object} transaction
+  */
 
 export default class Datastore extends EventEmitter {
   /**
@@ -266,8 +268,7 @@ export default class Datastore extends EventEmitter {
     }
 
     this.notify(`${this.schema.name}.created`, {
-      entities: [insertedEntity],
-      insertedCount: 1
+      entities: [insertedEntity]
     })
 
     return insertedEntity
@@ -296,8 +297,7 @@ export default class Datastore extends EventEmitter {
     }
 
     this.notify(`${this.schema.name}.created`, {
-      entities: insertedEntities,
-      insertedCount: insertedEntities.length
+      entities: insertedEntities
     })
 
     return insertedEntities
@@ -327,46 +327,10 @@ export default class Datastore extends EventEmitter {
     }
 
     this.notify(`${this.schema.name}.updated`, {
-      entities: [updatedEntity],
-      updatedCount: 1
+      entities: [updatedEntity]
     })
 
     return updatedEntity
-  }
-
-  /**
-   * Note: Use this with caution
-   * - Avoid this method if possible
-   * - this will not trigger the events as expected it will only know updatedCount not the exact documents
-   * - not all databases support this properly
-   *
-   * @fires Datastore#{name}.updated
-   * @param {object} filter
-   * @param {Update} update
-   * @param {object} [options]
-   * @returns Promise<number>
-   */
-  async updateMany (filter, update, options = {}) {
-    const convertedUpdate = this.convertUpdate(update)
-    await this.schema.validate(convertedUpdate.validate, true)
-
-    const updatedCount = await this.invokeAdapterMethod('updateMany',
-      filter,
-      convertedUpdate.update,
-      options
-    )
-
-    if (!updatedCount || updatedCount === 0) {
-      return false
-    }
-
-    this.notify(`${this.schema.name}.updated`, {
-      updatedCount,
-      update,
-      filter
-    })
-
-    return updatedCount
   }
 
   /**
@@ -385,8 +349,7 @@ export default class Datastore extends EventEmitter {
     }
 
     this.notify(`${this.schema.name}.deleted`, {
-      ids: [deletedId],
-      deletedCount: 1
+      ids: [deletedId]
     })
 
     return deletedId
@@ -412,42 +375,10 @@ export default class Datastore extends EventEmitter {
     }
 
     this.notify(`${this.schema.name}.deleted`, {
-      ids: deletedIds,
-      deletedCount: deletedIds.length
+      ids: deletedIds
     })
 
     return deletedIds
-  }
-
-  /**
-   * Delete entities by filter
-   *
-   * Note: Use this with caution
-   * - Avoid this method if possible
-   * - this will not trigger the events as expected it will only know deletedCount not the exact documents
-   * - not all databases support this properly
-   *
-   * @fires Datastore#{name}.deleted
-   * @param {object} filter
-   * @param {object} [options]
-   * @returns Promise<number>
-   */
-  async deleteMany (filter, options = {}) {
-    const deletedCount = await this.invokeAdapterMethod('deleteMany',
-      filter,
-      options
-    )
-
-    if (!deletedCount) {
-      return false
-    }
-
-    this.notify(`${this.schema.name}.deleted`, {
-      filter,
-      deletedCount
-    })
-
-    return deletedCount
   }
 
   /**
@@ -505,7 +436,14 @@ export default class Datastore extends EventEmitter {
     return this.invokeAdapterMethod('count', filter, options)
   }
 
+  /**
+   * @param {Datastore~transactionCallback} cb
+   */
   async transaction (cb) {
     return this.invokeAdapterMethod('transaction', cb)
+  }
+
+  async raw () {
+    return this.invokeAdapterMethod('raw')
   }
 }

@@ -96,10 +96,8 @@ describe('MongoDatastoreAdapter', () => {
     expect(adapter.insertOne).toBeDefined()
     expect(adapter.insertMany).toBeDefined()
     expect(adapter.updateById).toBeDefined()
-    expect(adapter.updateMany).toBeDefined()
     expect(adapter.deleteById).toBeDefined()
     expect(adapter.deleteByIds).toBeDefined()
-    expect(adapter.deleteMany).toBeDefined()
     expect(adapter.findById).toBeDefined()
     expect(adapter.findByIds).toBeDefined()
     expect(adapter.findOne).toBeDefined()
@@ -274,26 +272,6 @@ describe('MongoDatastoreAdapter', () => {
     })
   })
 
-  describe('#updateMany', () => {
-    it('should call collection#updateMany', async () => {
-      expect.assertions(2)
-      const filter = {}
-      const update = {}
-      const options = {}
-      await adapter.updateMany(filter, update, options)
-      expect(adapter.collection.updateMany).toHaveBeenCalledTimes(1)
-      expect(adapter.collection.updateMany).toHaveBeenCalledWith(filter, update, options)
-    })
-
-    it('should return updated count', async () => {
-      expect.assertions(1)
-      const filter = {}
-      const update = {}
-      const updatedCount = await adapter.updateMany(filter, update)
-      expect(updatedCount).toEqual(1)
-    })
-  })
-
   describe('#deleteById', () => {
     it('should call collection#findOneAndDelete', async () => {
       expect.assertions(2)
@@ -350,24 +328,6 @@ describe('MongoDatastoreAdapter', () => {
         .mockReturnValueOnce(false)
       const deletedIds2 = await adapter.deleteByIds(ids)
       expect(deletedIds2.length).toEqual(1)
-    })
-  })
-
-  describe('#deleteMany', () => {
-    it('should call collection#deleteMany', async () => {
-      expect.assertions(2)
-      const filter = {}
-      const options = {}
-      await adapter.deleteMany(filter, options)
-      expect(adapter.collection.deleteMany).toHaveBeenCalledTimes(1)
-      expect(adapter.collection.deleteMany).toHaveBeenCalledWith(filter, options)
-    })
-
-    it('should return deleted count', async () => {
-      expect.assertions(1)
-      const filter = {}
-      const deletedCount = await adapter.updateMany(filter)
-      expect(deletedCount).toEqual(1)
     })
   })
 

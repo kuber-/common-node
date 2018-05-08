@@ -68,11 +68,6 @@ export default class MongoDataStoreAdapter {
     return !!value && this.mapDocFromMongo(value)
   }
 
-  async updateMany (filter, update, options) {
-    const { modifiedCount } = this.collection.updateMany(filter, update, options)
-    return modifiedCount
-  }
-
   async deleteById (id, options) {
     const { value } = await this.collection.findOneAndDelete({ _id: mongodb.ObjectID(id) }, options)
     return !!value && this.mapDocFromMongo(value).id
@@ -81,11 +76,6 @@ export default class MongoDataStoreAdapter {
   async deleteByIds (ids, options) {
     const deletedIds = await Promise.all(ids.map(id => this.deleteById(id, options)))
     return deletedIds.filter(id => !!id)
-  }
-
-  async deleteMany (filter, options) {
-    const { deletedCount } = await this.collection.deleteMany(filter, options)
-    return deletedCount
   }
 
   async findById (id, options) {
@@ -115,6 +105,10 @@ export default class MongoDataStoreAdapter {
     const { $select, $limit, $offset, $sort, ...query } = filter
     const count = this.collection.count(query, options)
     return count
+  }
+
+  async raw () {
+    return this.collection
   }
 
   createCursor (filter = {}, options) {

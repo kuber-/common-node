@@ -41,10 +41,6 @@ export default class KnexDataStoreAdapter {
     return this.getDBFromOptions(options).where(this.identifier, id).update(update.$set, '*').then(rows => rows[0])
   }
 
-  async updateMany (filter, update, options) {
-    return this.getDBFromOptions(options).where(filter).update(update.$set)
-  }
-
   async deleteById (id, options) {
     const rowsAffected = await this.getDBFromOptions(options).where(this.identifier, id).delete()
     return rowsAffected > 0 && id
@@ -53,10 +49,6 @@ export default class KnexDataStoreAdapter {
   async deleteByIds (ids, options) {
     // TODO return deleted ids instead of count
     return this.getDBFromOptions(options).whereIn(this.identifier, ids).delete()
-  }
-
-  async deleteMany (filter, options) {
-    return this.getDBFromOptions(options).where(filter).delete(filter)
   }
 
   async findById (id, options) {
@@ -82,6 +74,10 @@ export default class KnexDataStoreAdapter {
 
   async transaction (cb) {
     return this.db.transaction(cb)
+  }
+
+  async raw () {
+    return this.db
   }
 
   createCursor (filter = {}, options) {
