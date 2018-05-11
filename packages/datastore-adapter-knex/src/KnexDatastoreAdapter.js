@@ -108,7 +108,7 @@ export default class KnexDataStoreAdapter {
         } else if (_sort.indexOf('+') === 0) {
           cursor.orderBy(_sort.substring(1), 'asc')
         } else {
-          cursor.orderBy(_sort.substring(1), 'asc')
+          cursor.orderBy(_sort, 'asc')
         }
       })
     }
