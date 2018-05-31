@@ -1,6 +1,6 @@
 {
   "name": "@tenbitscode/moleculer-middleware-action-middleware",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "moleculer middleware for allowing middleware style for actions",
   "main": "lib/index.js",
   "scripts": {

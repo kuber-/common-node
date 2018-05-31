@@ -1,6 +1,6 @@
 {
   "name": "@tenbitscode/moleculer-datastore-mixin",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Moleculer mixin for @tenbitscode/datastore",
   "main": "lib/moleculerDatastoreMixin.js",
   "scripts": {

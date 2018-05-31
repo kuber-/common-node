@@ -1,6 +1,6 @@
 {
   "name": "@tenbitscode/pubsub-gcloud",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "pubsub interface for google cloud pubsub",
   "main": "lib/GooglePubSub.js",
   "scripts": {

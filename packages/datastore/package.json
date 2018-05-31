@@ -1,6 +1,6 @@
 {
   "name": "@tenbitscode/datastore",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "",
   "main": "lib/index.js",
   "author": "",
@@ -9,7 +9,7 @@
     "build": "babel src --out-dir lib"
   },
   "dependencies": {
-    "@tenbitscode/json-schema-validator": "^0.0.4",
+    "@tenbitscode/json-schema-validator": "^0.0.5",
     "flat": "^4.0.0",
     "lodash": "^4.17.5"
   }
