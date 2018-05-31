@@ -1,5 +1,5 @@
 {
-  "name": "@ten-bits/datastore-adapter-knex",
+  "name": "@tenbitscode/datastore-adapter-knex",
   "version": "0.0.9",
   "description": "Knex adapter for datastore interface",
   "main": "lib/KnexDatastoreAdapter.js",

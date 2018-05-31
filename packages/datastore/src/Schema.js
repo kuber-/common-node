@@ -1,4 +1,4 @@
-import JSONSchemaValidator from '@ten-bits/json-schema-validator'
+import JSONSchemaValidator from '@tenbitscode/json-schema-validator'
 import get from 'lodash/get'
 
 export default class Schema {

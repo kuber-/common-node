@@ -1,5 +1,5 @@
 {
-  "name": "@ten-bits/moleculer-params-json-schema-validator",
+  "name": "@tenbitscode/moleculer-params-json-schema-validator",
   "version": "0.0.3",
   "description": "JSON schema validator for params",
   "main": "lib/JSONSchemaParamsValidator.js",
@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ten-bits/json-schema-validator": "^0.0.4"
+    "@tenbitscode/json-schema-validator": "^0.0.4"
   },
   "peerDependencies": {
     "moleculer": "^0.12.1"

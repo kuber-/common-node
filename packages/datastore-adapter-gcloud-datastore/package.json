@@ -1,5 +1,5 @@
 {
-  "name": "@ten-bits/datastore-adapter-gcloud-datastore",
+  "name": "@tenbitscode/datastore-adapter-gcloud-datastore",
   "version": "0.0.0",
   "description": "datastore adapter for google cloud nosql  datastore",
   "main": "lib/GoogleDatastoreAdapter.js",

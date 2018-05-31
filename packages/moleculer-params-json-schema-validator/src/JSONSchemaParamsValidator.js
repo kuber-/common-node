@@ -1,6 +1,6 @@
 import { Validator, Errors } from 'moleculer'
 import FastestValidator from 'fastest-validator'
-import JSONSchemaValidator from '@ten-bits/json-schema-validator'
+import JSONSchemaValidator from '@tenbitscode/json-schema-validator'
 
 const { ValidationError } = Errors
 

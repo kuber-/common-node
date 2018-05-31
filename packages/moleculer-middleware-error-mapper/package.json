@@ -1,5 +1,5 @@
 {
-  "name": "@ten-bits/moleculer-middleware-error-mapper",
+  "name": "@tenbitscode/moleculer-middleware-error-mapper",
   "version": "0.0.2",
   "description": "moleculer middleware for mapping errors",
   "main": "lib/index.js",

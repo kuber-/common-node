@@ -1,5 +1,5 @@
 {
-  "name": "@ten-bits/pubsub-gcloud",
+  "name": "@tenbitscode/pubsub-gcloud",
   "version": "0.0.2",
   "description": "pubsub interface for google cloud pubsub",
   "main": "lib/GooglePubSub.js",

@@ -1,7 +1,7 @@
 {
-  "name": "@ten-bits/moleculer-datastore-mixin",
+  "name": "@tenbitscode/moleculer-datastore-mixin",
   "version": "0.0.17",
-  "description": "Moleculer mixin for @ten-bits/datastore",
+  "description": "Moleculer mixin for @tenbitscode/datastore",
   "main": "lib/moleculerDatastoreMixin.js",
   "scripts": {
     "build": "babel src --out-dir lib"

@@ -1,4 +1,4 @@
-import PubSub from '@ten-bits/pubsub-gcloud'
+import PubSub from '@tenbitscode/pubsub-gcloud'
 import { Transporters } from 'moleculer'
 import { PACKET_REQUEST, PACKET_EVENT } from 'moleculer/src/packets'
 

@@ -1,5 +1,5 @@
 {
-  "name": "@ten-bits/moleculer-middleware-event-emitter",
+  "name": "@tenbitscode/moleculer-middleware-event-emitter",
   "version": "0.0.3",
   "description": "moleculer middleware for emitting events",
   "main": "lib/index.js",
