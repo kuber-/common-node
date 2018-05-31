@@ -8,9 +8,9 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:ten-bits/common-node.git"
+    "url": "git+ssh://git@github.com:tenbitscode/common-node.git"
   },
-  "homepage": "https://github.com/ten-bits/common-node.git",
+  "homepage": "https://github.com/tenbitscode/common-node.git",
   "scripts": {
     "build-clean": "rm -rf ./packages/*/lib",
     "clean-all": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules && yarn run build-clean",
