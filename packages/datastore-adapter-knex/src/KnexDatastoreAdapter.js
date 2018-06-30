@@ -60,7 +60,13 @@ export default class KnexDataStoreAdapter {
   }
 
   async findOne (filter, options) {
-    return this.getDBFromOptions(options).where(filter).limit(1).first()
+    return this.createCursor({
+      filters: {
+        ...filter.filters,
+        $limit: 1
+      },
+      query: filter.query
+    }, options).first()
   }
 
   async find (filter, options) {
@@ -68,7 +74,7 @@ export default class KnexDataStoreAdapter {
   }
 
   async count (filter, options) {
-    const result = await this.getDBFromOptions(options).where(filter).count(this.identifier)
+    const result = await this.createCursor(filter, options).count(this.identifier)
     return result && result.length > 0 ? parseInt(result[0].count) : 0
   }
 
@@ -81,28 +87,28 @@ export default class KnexDataStoreAdapter {
   }
 
   createCursor (filter = {}, options) {
-    const { $select, $limit, $offset, $sort, ...query } = filter
+    const { filters, ...query } = filter
     const cursor = this.getDBFromOptions(options)
     knexify(cursor, query)
 
     // select
-    if ($select) {
-      cursor.select($select)
+    if (filters.$select) {
+      cursor.select(filters.$select.split(','))
     }
 
     // limit
-    if ($limit) {
-      cursor.limit($limit)
+    if (filters.$limit) {
+      cursor.limit(filters.$limit)
     }
 
     // offset
-    if ($offset) {
-      cursor.offset($offset)
+    if (filters.$offset) {
+      cursor.offset(filters.$offset)
     }
 
     // sort
-    if ($sort) {
-      $sort.split(',').forEach(_sort => {
+    if (filters.$sort) {
+      filters.$sort.split(',').forEach(_sort => {
         if (_sort.indexOf('-') === 0) {
           cursor.orderBy(_sort.substring(1), 'desc')
         } else if (_sort.indexOf('+') === 0) {

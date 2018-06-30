@@ -555,7 +555,10 @@ describe('Datastore', () => {
       const filter = { name: 'name-1' }
       const options = {}
       await datastore.findOne(filter, options)
-      expect(datastore.adapter.findOne).toHaveBeenCalledWith(filter, options)
+      expect(datastore.adapter.findOne).toHaveBeenCalledWith({
+        filters: {},
+        query: filter
+      }, options)
     })
 
     it('should call adapter findOne', async () => {
@@ -572,7 +575,10 @@ describe('Datastore', () => {
       const filter = { name: 'name-1' }
       const options = {}
       await datastore.find(filter, options)
-      expect(datastore.adapter.find).toHaveBeenCalledWith(filter, options)
+      expect(datastore.adapter.find).toHaveBeenCalledWith({
+        filters: {},
+        query: filter
+      }, options)
     })
 
     it('should return found entities', async () => {
@@ -589,7 +595,10 @@ describe('Datastore', () => {
       const filter = { name: 'name-1' }
       const options = {}
       await datastore.count(filter, options)
-      expect(datastore.adapter.count).toHaveBeenCalledWith(filter, options)
+      expect(datastore.adapter.count).toHaveBeenCalledWith({
+        filters: {},
+        query: filter
+      }, options)
     })
 
     it('should return count', async () => {

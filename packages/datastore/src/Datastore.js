@@ -1,6 +1,7 @@
 import EventEmitter from 'events'
 import merge from 'lodash/merge'
 import flatten from 'flat'
+import filterQuery from './filterQuery'
 
 /**
  * queries: $in, $nin, $gt, $gte, $lt, $lte, $ne etc.,
@@ -411,7 +412,7 @@ export default class Datastore extends EventEmitter {
    * @returns Promise<object>
    */
   async findOne (filter, options = {}) {
-    return this.invokeAdapterMethod('findOne', filter, options)
+    return this.invokeAdapterMethod('findOne', filterQuery(filter), options)
   }
 
   /**
@@ -422,7 +423,7 @@ export default class Datastore extends EventEmitter {
    * @returns Promise<array>
    */
   async find (filter, options = {}) {
-    return this.invokeAdapterMethod('find', filter, options)
+    return this.invokeAdapterMethod('find', filterQuery(filter), options)
   }
 
   /**
@@ -433,7 +434,7 @@ export default class Datastore extends EventEmitter {
    * @returns Promise<number>
    */
   async count (filter, options = {}) {
-    return this.invokeAdapterMethod('count', filter, options)
+    return this.invokeAdapterMethod('count', filterQuery(filter), options)
   }
 
   /**

@@ -111,6 +111,7 @@ describe('MongoDatastoreAdapter', () => {
     expect(adapter.mapDocsFromMongo).toBeDefined()
     expect(adapter.mapDocToMongo).toBeDefined()
     expect(adapter.mapDocsToMongo).toBeDefined()
+    expect(adapter.createCursor).toBeDefined()
   })
 
   describe('#init', () => {
@@ -371,8 +372,10 @@ describe('MongoDatastoreAdapter', () => {
 
       expect(adapter.find).toHaveBeenCalledTimes(1)
       expect(adapter.find).toHaveBeenCalledWith({
-        _id: {
-          $in: ids
+        query: {
+          _id: {
+            $in: ids
+          }
         }
       }, options)
     })
@@ -381,14 +384,18 @@ describe('MongoDatastoreAdapter', () => {
   describe('#findOne', () => {
     it('should call find', async () => {
       expect.assertions(2)
-      const filter = { name: 'name-1' }
+      const filter = {
+        query: { name: 'name-1' }
+      }
       const options = {}
       jest.spyOn(adapter, 'find')
       await adapter.findOne(filter, options)
       expect(adapter.find).toHaveBeenCalledTimes(1)
       expect(adapter.find).toHaveBeenCalledWith({
-        ...filter,
-        $limit: 1
+        query: filter.query,
+        filters: {
+          $limit: 1
+        }
       }, options)
     })
   })
@@ -396,7 +403,9 @@ describe('MongoDatastoreAdapter', () => {
   describe('#find', () => {
     it('should call createCursor', async () => {
       expect.assertions(2)
-      const filter = { name: 'name-1' }
+      const filter = {
+        query: { name: 'name-1' }
+      }
       const options = {}
       jest.spyOn(adapter, 'createCursor')
       await adapter.find(filter, options)
@@ -408,7 +417,9 @@ describe('MongoDatastoreAdapter', () => {
   describe('#count', () => {
     it('should call collection#count', async () => {
       expect.assertions(2)
-      const filter = { name: 'name-1' }
+      const filter = {
+        query: { name: 'name-1' }
+      }
       const options = {}
       await adapter.count(filter, options)
       expect(adapter.collection.count).toHaveBeenCalledTimes(1)
@@ -417,7 +428,9 @@ describe('MongoDatastoreAdapter', () => {
 
     it('should return count', async () => {
       expect.assertions(1)
-      const filter = { name: 'name-1' }
+      const filter = {
+        query: { name: 'name-1' }
+      }
       const count = await adapter.count(filter)
       expect(count).toEqual(1)
     })
@@ -425,11 +438,13 @@ describe('MongoDatastoreAdapter', () => {
 
   describe('#createCursor', () => {
     const filter = {
-      name: 'name-1',
-      $select: 'name,state',
-      $offset: 100,
-      $limit: 10,
-      $sort: '-name,+state,suburb'
+      query: { name: 'name-1' },
+      filters: {
+        $select: 'name,state',
+        $offset: 100,
+        $limit: 10,
+        $sort: '-name,+state,suburb'
+      }
     }
 
     it('should call collection#find', async () => {

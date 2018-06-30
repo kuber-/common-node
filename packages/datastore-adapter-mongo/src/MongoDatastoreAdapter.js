@@ -85,14 +85,22 @@ export default class MongoDataStoreAdapter {
 
   async findByIds (ids, options) {
     return this.find({
-      _id: {
-        $in: ids.map(id => mongodb.ObjectID(id))
+      query: {
+        _id: {
+          $in: ids.map(id => mongodb.ObjectID(id))
+        }
       }
     }, options)
   }
 
   async findOne (filter, options) {
-    const docs = await this.find(Object.assign({}, filter, { $limit: 1 }), options)
+    const docs = await this.find({
+      filters: {
+        ...filter.filters,
+        $limit: 1
+      },
+      query: filter.query
+    }, options)
     return docs && docs.length > 0 && docs[0]
   }
 
@@ -102,8 +110,7 @@ export default class MongoDataStoreAdapter {
   }
 
   async count (filter, options) {
-    const { $select, $limit, $offset, $sort, ...query } = filter
-    const count = this.collection.count(query, options)
+    const count = this.collection.count(filter, options)
     return count
   }
 
@@ -112,32 +119,32 @@ export default class MongoDataStoreAdapter {
   }
 
   createCursor (filter = {}, options) {
-    const { $select, $limit, $offset, $sort, ...query } = filter
+    const { filters = {}, query } = filter
     const cursor = this.collection.find(query, options)
 
     // select
-    if ($select) {
+    if (filters.$select) {
       const mongoSelect = {}
-      $select.split(',').forEach((key) => {
+      filters.$select.split(',').forEach((key) => {
         mongoSelect[key] = 1
       })
       cursor.project(mongoSelect)
     }
 
     // limit
-    if ($limit) {
-      cursor.limit($limit)
+    if (filters.$limit) {
+      cursor.limit(filters.$limit)
     }
 
     // offset
-    if ($offset) {
-      cursor.skip($offset)
+    if (filters.$offset) {
+      cursor.skip(filters.$offset)
     }
 
     // sort
-    if ($sort) {
+    if (filters.$sort) {
       const mongoSort = {}
-      $sort.split(',').forEach(_sort => {
+      filters.$sort.split(',').forEach(_sort => {
         if (_sort.indexOf('-') === 0) {
           mongoSort[_sort.substring(1)] = -1
         } else if (_sort.indexOf('+') === 0) {
