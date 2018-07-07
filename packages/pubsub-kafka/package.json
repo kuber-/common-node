@@ -1,0 +1,16 @@
+{
+  "name": "@tenbitscode/pubsub-kafka",
+  "version": "0.0.0",
+  "description": "pubsub interface for kafka",
+  "main": "lib/KafkaPubSub.js",
+  "scripts": {
+    "build": "babel src --out-dir lib"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/pubsub": "^0.16.4",
+    "async": "^2.6.1",
+    "kafka-node": "^2.6.1"
+  }
+}
