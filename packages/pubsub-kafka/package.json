@@ -1,6 +1,6 @@
 {
   "name": "@tenbitscode/pubsub-kafka",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "pubsub interface for kafka",
   "main": "lib/KafkaPubSub.js",
   "scripts": {
