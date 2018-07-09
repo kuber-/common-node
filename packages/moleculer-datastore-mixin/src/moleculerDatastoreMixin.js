@@ -117,22 +117,6 @@ const moleculerDatastoreMixin = (
       async count (ctx, filter, options) {
         return this.invokeDatastoreMethod('count', ctx, filter, options)
       }
-    },
-    started () {
-      this.getDatastore().on('*', (eventName, data) => {
-        let entities, ids
-
-        switch (eventName.split('.').pop()) {
-          case 'created':
-          case 'updated':
-            entities = data.entities
-            break
-          case 'deleted':
-            ids = data.ids
-        }
-
-        (entities || ids | []).forEach((x) => this.broker.emit(eventName, x))
-      })
     }
   }
 }
