@@ -87,7 +87,7 @@ export default class KnexDataStoreAdapter {
   }
 
   createCursor (filter = {}, options) {
-    const { filters, ...query } = filter
+    const { filters, query } = filter
     const cursor = this.getDBFromOptions(options)
     knexify(cursor, query)
 
