@@ -9,6 +9,6 @@
     "build": "babel src --out-dir lib"
   },
   "dependencies": {
-    "ajv": "^6.1.1"
+    "ajv": "^6.5.2"
   }
 }
