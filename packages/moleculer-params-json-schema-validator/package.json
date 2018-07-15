@@ -1,6 +1,6 @@
 {
   "name": "@tenbitscode/moleculer-params-json-schema-validator",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "JSON schema validator for params",
   "main": "lib/JSONSchemaParamsValidator.js",
   "scripts": {

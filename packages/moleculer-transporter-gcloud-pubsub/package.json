@@ -1,6 +1,6 @@
 {
   "name": "@tenbitscode/moleculer-transporter-gcloud-pubsub",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "moleculer transporter for google cloud pubsub",
   "main": "index.js",
   "scripts": {
