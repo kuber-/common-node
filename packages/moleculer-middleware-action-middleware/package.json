@@ -9,12 +9,12 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "moleculer": "^0.12.1"
+    "moleculer": "^0.13.1"
   },
   "dependencies": {
     "koa-compose": "^4.0.0"
   },
   "devDependencies": {
-    "moleculer": "^0.12.1"
+    "moleculer": "^0.13.1"
   }
 }

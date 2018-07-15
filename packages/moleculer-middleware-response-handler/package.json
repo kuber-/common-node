@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "moleculer": "^0.12.1"
+    "moleculer": "^0.13.1"
   },
   "devDependencies": {
-    "moleculer": "^0.12.1"
+    "moleculer": "^0.13.1"
   }
 }

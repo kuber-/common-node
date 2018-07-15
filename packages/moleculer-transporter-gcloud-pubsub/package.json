@@ -12,9 +12,9 @@
     "@tenbitscode/pubsub-gcloud": "^0.0.3"
   },
   "devDependencies": {
-    "moleculer": "^0.12.1"
+    "moleculer": "^0.13.1"
   },
   "peerDependencies": {
-    "moleculer": "^0.12.1"
+    "moleculer": "^0.13.1"
   }
 }
